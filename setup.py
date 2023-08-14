@@ -35,5 +35,10 @@ setuptools.setup(
     ],
     python_requires='>=3.8',
     install_requires=[
+        'Django',
+        'pydantic',
+        'djangorestframework',
+        'markdown',
+        'django-filter',
     ],
 )
