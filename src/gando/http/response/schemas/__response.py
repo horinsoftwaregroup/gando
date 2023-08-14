@@ -9,3 +9,4 @@ class Response(BaseModel):
     messages: Optional[MessagesSchema] = MessagesSchema()
     monitor: dict = dict()
     data: dict = dict()
+    many: bool = False
