@@ -6,7 +6,7 @@ from django.conf import settings
 
 class Gando(Base):
     MONITOR_KEYS: list = list()
-    DEBUG: bool = False
+    DEBUG: bool = True
 
 
 @lru_cache()
