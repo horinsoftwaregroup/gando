@@ -21,12 +21,12 @@ class JsonResponse(DJJsonResponse):
 
         **kwargs,
     ):
-        data, many = self.__data_parser(data)
+        data, many, monitor = self.__data_parser(data)
 
         context = {
             'success': not (bool(error_messages) and bool(exception_messages)),
             'has_warning': bool(warning_messages),
-            'monitor': {},
+            'monitor': monitor,
             'messages': {
                 'log': log_messages or [] if SETTINGS.DEBUG else [],
                 'info': info_messages or [],

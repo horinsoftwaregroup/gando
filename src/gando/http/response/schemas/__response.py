@@ -6,7 +6,7 @@ from . import MessagesSchema
 class Response(BaseModel):
     success: bool = True
     has_warning: bool = False
-    messages: Optional[MessagesSchema] = MessagesSchema()
     monitor: dict = dict()
+    messages: Optional[MessagesSchema] = MessagesSchema()
     data: dict = dict()
     many: bool = False
