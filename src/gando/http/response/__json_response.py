@@ -13,26 +13,36 @@ class JsonResponse(DJJsonResponse):
 
         data: Optional[dict | list | str] = None,
 
-        log_messages: Optional[List[Dict[str, str]]] = None,
-        info_messages: Optional[List[Dict[str, str]]] = None,
-        warning_messages: Optional[List[Dict[str, str]]] = None,
-        error_messages: Optional[List[Dict[str, str]]] = None,
-        exception_messages: Optional[List[Dict[str, str]]] = None,
+        log_messages__: Optional[List[Dict[str, str]]] = None,
+        info_messages__: Optional[List[Dict[str, str]]] = None,
+        warning_messages__: Optional[List[Dict[str, str]]] = None,
+        error_messages__: Optional[List[Dict[str, str]]] = None,
+        exception_messages__: Optional[List[Dict[str, str]]] = None,
+
+        monitor__: dict = None,
 
         **kwargs,
     ):
-        data, many, monitor = self.__data_parser(data)
+        data, many, monitor, msgs = self.__data_parser(
+            data,
+            monitor__=monitor__,
+            log_messages__=log_messages__,
+            info_messages__=info_messages__,
+            warning_messages__=warning_messages__,
+            error_messages__=error_messages__,
+            exception_messages__=exception_messages__,
+        )
 
         context = {
-            'success': not (bool(error_messages) and bool(exception_messages)),
-            'has_warning': bool(warning_messages),
+            'success': not (bool(msgs['error_messages']) and bool(msgs['exception_messages'])),
+            'has_warning': bool(msgs['warning_messages']),
             'monitor': monitor,
             'messages': {
-                'log': log_messages or [] if SETTINGS.DEBUG else [],
-                'info': info_messages or [],
-                'warning': warning_messages or [],
-                'error': error_messages or [],
-                'exception': exception_messages or [],
+                'log': msgs['log_messages'] or [] if SETTINGS.DEBUG else [],
+                'info': msgs['info_messages'] or [],
+                'warning': msgs['warning_messages'] or [],
+                'error': msgs['error_messages'] or [],
+                'exception': msgs['exception_messages'] or [],
             },
             'data': data,
             'many': many,
@@ -44,9 +54,18 @@ class JsonResponse(DJJsonResponse):
             status=kwargs.get('status', 200)
         )
 
-    def __data_parser(self, data: Optional[dict | list | str]) -> (dict, bool):
-        monitor = {}
+    def __data_parser(self, data: Optional[dict | list | str], **kwargs):
+
+        monitor = kwargs.get('monitor__', {})
         many = False
+        msgs = {
+            'log_messages': kwargs.get('log_messages__', []),
+            'info_messages': kwargs.get('info_messages__', []),
+            'warning_messages': kwargs.get('warning_messages__', []),
+            'error_messages': kwargs.get('error_messages__', []),
+            'exception_messages': kwargs.get('exception_messages__', []),
+        }
+        msgs__ = {}
 
         if isinstance(data, str):
             data_response = {'result': data}
@@ -62,6 +81,7 @@ class JsonResponse(DJJsonResponse):
 
         elif isinstance(data, dict):
             data, monitor = self.___monitor_detector(data)
+            data, msgs__ = self.__messages_detector(data)
             if bool(data.get('results')):
                 many = True
                 data_response = data
@@ -72,7 +92,13 @@ class JsonResponse(DJJsonResponse):
         else:
             data_response = {'result': {}}
 
-        ret = data_response, many, monitor
+        msgs['log_messages'] += msgs__.get('log_messages', [])
+        msgs['info_messages'] += msgs__.get('info_messages', [])
+        msgs['warning_messages'] += msgs__.get('warning_messages', [])
+        msgs['error_messages'] += msgs__.get('error_messages', [])
+        msgs['exception_messages'] += msgs__.get('exception_messages', [])
+
+        ret = data_response, many, monitor, msgs
         return ret
 
     def ___monitor_detector(self, data):
@@ -82,3 +108,13 @@ class JsonResponse(DJJsonResponse):
             if mntr is not None:
                 monitor[i] = mntr
         return data, monitor
+
+    def __messages_detector(self, data: dict) -> (dict, dict):
+        msg = {
+            'log_messages': data.pop('log_messages', []),
+            'info_messages': data.pop('info_messages', []),
+            'warning_messages': data.pop('warning_messages', []),
+            'error_messages': data.pop('error_messages', []),
+            'exception_messages': data.pop('exception_messages', []),
+        }
+        return data, msg
