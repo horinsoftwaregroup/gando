@@ -10,17 +10,17 @@ debug_status = settings.DEBUG
 
 class JsonResponse(DJJsonResponse):
     def __init__(
-            self,
+        self,
 
-            data: Optional[dict | list | str] = None,
+        data: Optional[dict | list | str] = None,
 
-            log_messages: Optional[List[Dict[str, str]]] = None,
-            info_messages: Optional[List[Dict[str, str]]] = None,
-            warning_messages: Optional[List[Dict[str, str]]] = None,
-            error_messages: Optional[List[Dict[str, str]]] = None,
-            exception_messages: Optional[List[Dict[str, str]]] = None,
+        log_messages: Optional[List[Dict[str, str]]] = None,
+        info_messages: Optional[List[Dict[str, str]]] = None,
+        warning_messages: Optional[List[Dict[str, str]]] = None,
+        error_messages: Optional[List[Dict[str, str]]] = None,
+        exception_messages: Optional[List[Dict[str, str]]] = None,
 
-            **kwargs,
+        **kwargs,
     ):
         data, many = self.__data_parser(data)
 
@@ -45,27 +45,43 @@ class JsonResponse(DJJsonResponse):
             status=kwargs.get('status', 200)
         )
 
-    @staticmethod
-    def __data_parser(data: Optional[dict | list | str]) -> (dict, bool):
+    def __data_parser(self, data: Optional[dict | list | str]) -> (dict, bool):
+        monitor = {}
+        many = False
+
         if isinstance(data, str):
-            ret = {'result': data}
-            many = False
+            data_response = {'result': data}
+
         elif isinstance(data, list):
-            ret = {
+            data_response = {
                 'count': len(data),
                 'next': None,
                 'previous': None,
                 'results': data,
             }
             many = True
+
         elif isinstance(data, dict):
+            data, monitor = self.___monitor_detector(data)
             if bool(data.get('results')):
                 many = True
-                ret = data
+                data_response = data
+
             else:
-                many = False
-                ret = {'result': data}
+                data_response = {'result': data}
+
         else:
-            ret = {'result': {}}
-            many = False
-        return ret, many
+            data_response = {'result': {}}
+
+        ret = data_response, many, monitor
+        return ret
+
+    @property
+    def __get_monitor_keys(self):
+        return settings.MONITOR_KEYS or []
+
+    def ___monitor_detector(self, data):
+        monitor = {}
+        for i in self.__get_monitor_keys:
+            monitor[i] = data.pop(i, None)
+        return data, monitor
