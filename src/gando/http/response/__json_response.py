@@ -78,6 +78,7 @@ class JsonResponse(DJJsonResponse):
     def ___monitor_detector(self, data):
         monitor = {}
         for i in SETTINGS.MONITOR_KEYS:
-            monitor[i] = data.pop(i, None)
-
+            mntr = data.pop(i, None)
+            if mntr is not None:
+                monitor[i] = mntr
         return data, monitor
