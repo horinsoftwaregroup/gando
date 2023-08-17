@@ -1,11 +1,10 @@
 from typing import Optional, List, Dict
 
 from django.http.response import JsonResponse as DJJsonResponse
-from django.conf import settings
+
+from gando.config import SETTINGS
 
 from .schemas import ResponseSchema
-
-debug_status = settings.DEBUG
 
 
 class JsonResponse(DJJsonResponse):
@@ -29,7 +28,7 @@ class JsonResponse(DJJsonResponse):
             'has_warning': bool(warning_messages),
             'monitor': {},
             'messages': {
-                'log': log_messages or [] if debug_status else [],
+                'log': log_messages or [] if SETTINGS.DEBUG else [],
                 'info': info_messages or [],
                 'warning': warning_messages or [],
                 'error': error_messages or [],
@@ -76,12 +75,9 @@ class JsonResponse(DJJsonResponse):
         ret = data_response, many, monitor
         return ret
 
-    @property
-    def __get_monitor_keys(self):
-        return settings.MONITOR_KEYS or []
-
     def ___monitor_detector(self, data):
         monitor = {}
-        for i in self.__get_monitor_keys:
+        for i in SETTINGS.MONITOR_KEYS:
             monitor[i] = data.pop(i, None)
+
         return data, monitor
