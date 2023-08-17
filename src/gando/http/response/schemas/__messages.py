@@ -8,3 +8,4 @@ class Messages(BaseModel):
     info: Optional[List[Dict[str, str]]] = list()
     warning: Optional[List[Dict[str, str]]] = list()
     error: Optional[List[Dict[str, str]]] = list()
+    exception: Optional[List[Dict[str, str]]] = list()
