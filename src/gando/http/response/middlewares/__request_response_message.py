@@ -19,26 +19,6 @@ class ResponseMessages:
         self.__error = []
         self.__exception = []
 
-    @property
-    def log(self):
-        return self.__log
-
-    @property
-    def info(self):
-        return self.__info
-
-    @property
-    def warning(self):
-        return self.__warning
-
-    @property
-    def error(self):
-        return self.__error
-
-    @property
-    def exception(self):
-        return self.__exception
-
     def add2logs(self, msg_title: str, msg_content: str):
         self.__log.append({msg_title: msg_content})
 
