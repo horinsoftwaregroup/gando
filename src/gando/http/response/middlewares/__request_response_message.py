@@ -12,34 +12,40 @@ class MessagesSchema(BaseModel):
 
 
 class ResponseMessages:
+    log: list = []
+    info: list = []
+    warning: list = []
+    error: list = []
+    exception: list = []
+
     def __int__(self):
-        self.__log = []
-        self.__info = []
-        self.__warning = []
-        self.__error = []
-        self.__exception = []
+        self.log = []
+        self.info = []
+        self.warning = []
+        self.error = []
+        self.exception = []
 
     def add2logs(self, msg_title: str, msg_content: str):
-        self.__log.append({msg_title: msg_content})
+        self.log.append({msg_title: msg_content})
 
     def add2infos(self, msg_title: str, msg_content: str):
-        self.__info.append({msg_title: msg_content})
+        self.info.append({msg_title: msg_content})
 
     def add2warnings(self, msg_title: str, msg_content: str):
-        self.__warning.append({msg_title: msg_content})
+        self.warning.append({msg_title: msg_content})
 
     def add2errors(self, msg_title: str, msg_content: str):
-        self.__error.append({msg_title: msg_content})
+        self.error.append({msg_title: msg_content})
 
     def add2exceptions(self, msg_title: str, msg_content: str):
-        self.__exception.append({msg_title: msg_content})
+        self.exception.append({msg_title: msg_content})
 
     def export(self):
         ret = MessagesSchema(
-            log_messages=self.__log,
-            info_messages=self.__info,
-            warning_messages=self.__warning,
-            error_messages=self.__error,
-            exception_messages=self.__exception,
+            log_messages=self.log,
+            info_messages=self.info,
+            warning_messages=self.warning,
+            error_messages=self.error,
+            exception_messages=self.exception,
         )
         return ret
