@@ -59,11 +59,11 @@ class JsonResponse(DJJsonResponse):
         monitor = kwargs.get('monitor__', {})
         many = False
         msgs = {
-            'log_messages': kwargs.get('log_messages__', []),
-            'info_messages': kwargs.get('info_messages__', []),
-            'warning_messages': kwargs.get('warning_messages__', []),
-            'error_messages': kwargs.get('error_messages__', []),
-            'exception_messages': kwargs.get('exception_messages__', []),
+            'log_messages': kwargs.get('log_messages__') or [],
+            'info_messages': kwargs.get('info_messages__') or [],
+            'warning_messages': kwargs.get('warning_messages__') or [],
+            'error_messages': kwargs.get('error_messages__') or [],
+            'exception_messages': kwargs.get('exception_messages__') or [],
         }
         msgs__ = {}
 
