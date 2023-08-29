@@ -13,9 +13,11 @@ class JsonResponse(MiddlewareMixin):
         request.response_messages = ResponseMessages()
 
     def process_response(self, request, response):
-        msg = request.response_messages.export()
-        dmsg = msg.model_dump()
-        rsp = Response(status=self.__get_status_code(response), **dmsg, **response.__dict__)
+        rsp = response
+        if isinstance(response, Response):
+            msg = request.response_messages.export()
+            dmsg = msg.model_dump()
+            rsp = Response(status=self.__get_status_code(response), **dmsg, **response.__dict__)
         return rsp
 
     def __get_status_code(self, response):
