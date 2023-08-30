@@ -67,6 +67,7 @@ def s2c(value: str):
     for c in value:
         if c == '_':
             uppercase = True
+            continue
         tmp += c.upper() if uppercase else c
         uppercase = False
     ret = tmp
@@ -79,7 +80,7 @@ def s2p(value: str):
     for c in value:
         if c == '_':
             uppercase = True
-
+            continue
         tmp += c.upper() if uppercase else c
         uppercase = False
     ret = tmp
@@ -144,6 +145,7 @@ def k2c(value: str):
     for c in value:
         if c == '-':
             uppercase = True
+            continue
         tmp += c.upper() if uppercase else c
         uppercase = False
     ret = tmp
@@ -156,6 +158,7 @@ def k2p(value: str):
     for c in value:
         if c == '-':
             uppercase = True
+            continue
         tmp += c.upper() if uppercase else c
         uppercase = False
     ret = tmp
