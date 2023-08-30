@@ -7,217 +7,159 @@ from gando.utils.strings.casings import (
 
 
 def casings(value: str, from_case: str, to_case: str):
+    tmp, start_underscores = get_all_start_underscores(value)
+    tmp, end_underscores = get_all_end_underscores(tmp)
+
+    len_tmp = len(tmp)
+    if len_tmp == 0:
+        return value
+
     match from_case.lower():
         case 'snake':
             match to_case:
                 case 'camel':
-                    return s2c(value)
+                    rslt = s2c(tmp)
                 case 'pascal':
-                    return s2p(value)
+                    rslt = s2p(tmp)
                 case 'kebab':
-                    return s2k(value)
+                    rslt = s2k(tmp)
                 case _:
-                    return value
+                    rslt = tmp
         case 'camel':
             match to_case:
                 case 'snake':
-                    return c2s(value)
+                    rslt = c2s(tmp)
                 case 'pascal':
-                    return c2p(value)
+                    rslt = c2p(tmp)
                 case 'kebab':
-                    return c2k(value)
+                    rslt = c2k(tmp)
                 case _:
-                    return value
+                    rslt = tmp
         case 'pascal':
             match to_case:
                 case 'snake':
-                    return p2s(value)
+                    rslt = p2s(tmp)
                 case 'camel':
-                    return p2c(value)
+                    rslt = p2c(tmp)
                 case 'kebab':
-                    return p2k(value)
+                    rslt = p2k(tmp)
                 case _:
-                    return value
+                    rslt = tmp
         case 'kebab':
             match to_case:
                 case 'snake':
-                    return k2s(value)
+                    rslt = k2s(tmp)
                 case 'camel':
-                    return k2c(value)
+                    rslt = k2c(tmp)
                 case 'pascal':
-                    return k2p(value)
+                    rslt = k2p(tmp)
                 case _:
-                    return value
+                    rslt = tmp
         case _:
-            return value
+            rslt = tmp
+    ret = start_underscores + rslt + end_underscores
+    return ret
 
 
 def s2c(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
     tmp = ''
     uppercase = False
-
     for c in value:
         if c == '_':
             uppercase = True
-
         tmp += c.upper() if uppercase else c
         uppercase = False
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = tmp
+    return ret
 
 
 def s2p(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
     tmp = ''
     uppercase = True
-
     for c in value:
         if c == '_':
             uppercase = True
 
         tmp += c.upper() if uppercase else c
         uppercase = False
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = tmp
+    return ret
 
 
 def s2k(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
-    tmp = ''
-
-    for c in value:
-        tmp += '-' if c == '_' else c
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = value.replace('_', '-')
+    return ret
 
 
 def c2s(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
     tmp = ''
-
     for c in value:
         tmp += f'_{c.lower()}' if c.isupper() else c
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = tmp
+    return ret
 
 
 def c2p(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
-    value = start_underscores + value[0].upper() if len(value) > 0 else '' + value[1:] if len(
-        value) > 1 else '' + end_underscores
-    return value
+    ret = value[0].upper() + value[1:] if len(value) > 1 else ''
+    return ret
 
 
 def c2k(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
     tmp = ''
-
     for c in value:
         tmp += f'-{c.lower()}' if c.isupper() else c
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = tmp
+    return ret
 
 
 def p2s(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
     tmp = value[0].lower()
-
-    for c in value[1:]:
+    for c in value[1:] if len(value) > 1 else '':
         tmp += f'_{c.lower()}' if c.isupper() else c
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = tmp
+    return ret
 
 
 def p2c(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
-    value = start_underscores + value[0].lower() if len(value) > 0 else '' + value[1:] if len(
-        value) > 1 else '' + end_underscores
-    return value
+    ret = value[0].lower() + value[1:] if len(value) > 1 else ''
+    return ret
 
 
 def p2k(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
     tmp = value[0].lower()
-
-    for c in value[1:]:
+    for c in value[1:] if len(value) > 1 else '':
         tmp += f'-{c.lower()}' if c.isupper() else c
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = tmp
+    return ret
 
 
 def k2s(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
-    tmp = ''
-
-    for c in value:
-        tmp += '_' if c == '-' else c
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = value.replace('-', '_')
+    return ret
 
 
 def k2c(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
     tmp = ''
     uppercase = False
-
     for c in value:
         if c == '-':
             uppercase = True
-
         tmp += c.upper() if uppercase else c
         uppercase = False
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = tmp
+    return ret
 
 
 def k2p(value: str):
-    value, start_underscores = get_all_start_underscores(value)
-    value, end_underscores = get_all_end_underscores(value)
-
     tmp = ''
     uppercase = True
-
     for c in value:
         if c == '-':
             uppercase = True
-
         tmp += c.upper() if uppercase else c
         uppercase = False
-
-    value = start_underscores + tmp + end_underscores
-    return value
+    ret = tmp
+    return ret
 
 
 def get_all_start_underscores(value):
