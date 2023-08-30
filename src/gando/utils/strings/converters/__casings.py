@@ -168,7 +168,7 @@ def k2p(value: str):
 def get_all_start_underscores(value):
     i = 0
     start_underscores = ''
-    while value[i] == '_':
+    while value[i] == '_' and len(value) > i:
         start_underscores += '_'
         i += 1
     return value[i:], start_underscores
@@ -177,7 +177,7 @@ def get_all_start_underscores(value):
 def get_all_end_underscores(value):
     i = -1
     end_underscores = ''
-    while value[i] == '_':
+    while value[i] == '_' and len(value) >= abs(i):
         end_underscores += '_'
         i -= 1
     return value[:len(value) + i + 1], end_underscores
