@@ -3,10 +3,11 @@ from gando.utils.strings.casings import (
     CAMEL_CASE,
     PASCAL_CASE,
     KEBAB_CASE,
+    ANY,
 )
 
 
-def casings(value: str, from_case: str, to_case: str):
+def casings(value: str, from_case: str = ANY, to_case: str = SNAKE_CASE):
     tmp, start_underscores = get_all_start_underscores(value)
     tmp, end_underscores = get_all_end_underscores(tmp)
 
@@ -15,6 +16,18 @@ def casings(value: str, from_case: str, to_case: str):
         return value
 
     match from_case.lower():
+        case 'any':
+            match to_case:
+                case 'snake':
+                    rslt = a2s(tmp)
+                case 'camel':
+                    rslt = s2c(a2s(tmp))
+                case 'pascal':
+                    rslt = s2p(a2s(tmp))
+                case 'kebab':
+                    rslt = s2k(a2s(tmp))
+                case _:
+                    rslt = tmp
         case 'snake':
             match to_case:
                 case 'camel':
@@ -183,3 +196,18 @@ def get_all_end_underscores(value):
         end_underscores += '_'
         i -= 1
     return value[:len_val + i + 1] if len_val >= abs(i) else '', end_underscores
+
+
+def a2s(value: str):
+    value_ = value.replace('-', '_')
+
+    len_val = len(value_)
+    if len_val == 1:
+        return value_.lower()
+
+    tmp = value_[0].lower()
+    for i in value_[1:]:
+        tmp += f'_{i}' if i.isupper() else i
+
+    ret = tmp
+    return ret
