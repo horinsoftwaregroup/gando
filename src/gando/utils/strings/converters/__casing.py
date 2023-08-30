@@ -7,7 +7,7 @@ from gando.utils.strings.casings import (
 )
 
 
-def casings(value: str, from_case: str = ANY, to_case: str = SNAKE_CASE):
+def casing(value: str, from_case: str = ANY, to_case: str = SNAKE_CASE):
     tmp, start_underscores = get_all_start_underscores(value)
     tmp, end_underscores = get_all_end_underscores(tmp)
 
