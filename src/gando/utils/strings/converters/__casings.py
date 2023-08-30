@@ -207,7 +207,7 @@ def a2s(value: str):
 
     tmp = value_[0].lower()
     for i in value_[1:]:
-        tmp += f'_{i}' if i.isupper() else i
+        tmp += f'_{i.lower()}' if i.isupper() else i
 
     ret = tmp
     return ret
