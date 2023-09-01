@@ -34,73 +34,42 @@ def python_file_maker(path: str, name: str, private_=False) -> str:
     return python_file_full_name
 
 
-class BaseFiles(BaseSchema):
-    def __int__(self, application_path: str):
-        admin = python_file_maker(path=application_path, name='admin')
-        models = python_file_maker(path=application_path, name='models')
-        schemas = python_file_maker(path=application_path, name='schemas')
-        serializers = python_file_maker(path=application_path, name='serializers')
-        urls = python_file_maker(path=application_path, name='urls')
-        views = python_file_maker(path=application_path, name='views')
-
-        super().__int__(
-            admin=admin,
-            models=models,
-            schemas=schemas,
-            serializers=serializers,
-            urls=urls,
-            views=views,
-        )
-
-    admin: str
-    models: str
-    schemas: str
-    serializers: str
-    urls: str
-    views: str
+class BaseFiles:
+    def __init__(self, application_path: str):
+        self.admin: str = python_file_maker(path=application_path, name='admin')
+        self.models: str = python_file_maker(path=application_path, name='models')
+        self.schemas: str = python_file_maker(path=application_path, name='schemas')
+        self.serializers: str = python_file_maker(path=application_path, name='serializers')
+        self.urls: str = python_file_maker(path=application_path, name='urls')
+        self.views: str = python_file_maker(path=application_path, name='views')
 
 
-class BasePackageInfo(BaseSchema):
-    path: str
-
-    @property
-    def initial_path(self) -> str:
-        return os.path.join(self.path, '__init__.py')
+class BasePackageInfo:
+    def __init__(self, path: str):
+        self.path: str = path
+        self.initial_path: str = os.path.join(self.path, '__init__.py')
 
 
-class BasePackages(BaseSchema):
-    def __int__(self, application_path: str):
-        repo = BasePackageInfo(path=package_maker(parent_path=application_path, name='repo'))
-        repo__admin = BasePackageInfo(path=package_maker(parent_path=repo.path, name='admin'))
-        repo__models = BasePackageInfo(path=package_maker(parent_path=repo.path, name='models'))
-        repo__schemas = BasePackageInfo(path=package_maker(parent_path=repo.path, name='schemas'))
-        repo__schemas__models = BasePackageInfo(path=package_maker(parent_path=repo__schemas.path, name='models'))
-        repo__schemas__apis = BasePackageInfo(path=package_maker(parent_path=repo__schemas.path, name='apis'))
-        repo__serializers = BasePackageInfo(path=package_maker(parent_path=repo.path, name='serializers'))
-        repo__urls = BasePackageInfo(path=package_maker(parent_path=repo.path, name='urls'))
-        repo__views = BasePackageInfo(path=package_maker(parent_path=repo.path, name='views'))
-
-        super().__int__(
-            repo=repo,
-            repo__admin=repo__admin,
-            repo__models=repo__models,
-            repo__schemas=repo__schemas,
-            repo__schemas__models=repo__schemas__models,
-            repo__schemas__apis=repo__schemas__apis,
-            repo__serializers=repo__serializers,
-            repo__urls=repo__urls,
-            repo__views=repo__views,
-        )
-
-    repo: BasePackageInfo
-    repo__admin: BasePackageInfo
-    repo__models: BasePackageInfo
-    repo__schemas: BasePackageInfo
-    repo__schemas__models: BasePackageInfo
-    repo__schemas__apis: BasePackageInfo
-    repo__serializers: BasePackageInfo
-    repo__urls: BasePackageInfo
-    repo__views: BasePackageInfo
+class BasePackages:
+    def __init__(self, application_path: str):
+        self.repo: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=application_path, name='repo'))
+        self.repo__admin: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='admin'))
+        self.repo__models: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='models'))
+        self.repo__schemas: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='schemas'))
+        self.repo__schemas__models: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo__schemas.path, name='models'))
+        self.repo__schemas__apis: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo__schemas.path, name='apis'))
+        self.repo__serializers: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='serializers'))
+        self.repo__urls: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='urls'))
+        self.repo__views: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='views'))
 
 
 class Command(BaseCommand):
@@ -282,7 +251,7 @@ class Command(BaseCommand):
                     f"    {self.model_name}DestroySerializer,\n)\n")
 
     def initial_views(self):
-        dir_path = package_maker(self.base_packages.repo__serializers.path, self.model_name)
+        dir_path = package_maker(self.base_packages.repo__views.path, self.model_name)
 
         with open(os.path.join(dir_path, '__base.py'), 'w') as f:
             f.write(f"from {self.app_label}.models import {self.model_name}Model as Model\n\n\n"
@@ -347,6 +316,7 @@ class Command(BaseCommand):
 
     def initial_urlpatterns(self):
         file_path = python_file_maker(self.base_packages.repo__urls.path, self.model_name)
+
         with open(file_path, 'w') as f:
             f.write(f"from django.urls import path\n\n"
                     f"from {self.app_label}.views import (\n"
@@ -364,14 +334,23 @@ class Command(BaseCommand):
                     f"    path('<int:pk>/', UpdateAPIView.as_view(), name='update'),\n"
                     f"    path('<int:pk>/', DestroyAPIView.as_view(), name='destroy'),\n"
                     f"]\n")
-        with open(self.base_files.urls, 'r') as f:
+
+        with open(self.base_files.urls, 'r+') as f:
             txt = f.read()
-        with open(self.base_files.urls, 'w') as f:
-            tmp = (f"{txt[:txt.find(']')]}\n"
-                   f"\n    path('{casing(self.model_name, to_case=KEBAB_CASE)}s/', "
-                   f"include('{self.app_label}.repo.urls.{self.model_name_snake_case}')),\n"
-                   f"{txt[txt.find(']'):]}")
-            f.write(tmp)
+
+            if txt.find('urlpatterns') == -1:
+                f.write(f"from django.urls import path, include\n\n\n"
+                        f"app_name = '{self.app_label}'\n"
+                        f"urlpatterns = [\n"
+                        f"    path('{casing(self.model_name, to_case=KEBAB_CASE)}s/', "
+                        f"include('{self.app_label}.repo.urls.{self.model_name_snake_case}')),\n"
+                        f"]\n")
+            else:
+                f.write('')
+                f.write(f"{txt[:txt.find(']')]}\n"
+                        f"\n    path('{casing(self.model_name, to_case=KEBAB_CASE)}s/', "
+                        f"include('{self.app_label}.repo.urls.{self.model_name_snake_case}')),\n"
+                        f"{txt[txt.find(']'):]}")
 
     def initial_schemas(self):
         file_path = python_file_maker(self.base_packages.repo__schemas__models.path, self.model_name, private_=True)
