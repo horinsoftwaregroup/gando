@@ -56,7 +56,7 @@ class JsonResponse(DJJsonResponse):
 
     def __data_parser(self, data: Optional[dict | list | str], **kwargs):
 
-        monitor = kwargs.get('monitor__', {})
+        monitor = kwargs.get('monitor__') or {}
         many = False
         msgs = {
             'log_messages': kwargs.get('log_messages__') or [],
