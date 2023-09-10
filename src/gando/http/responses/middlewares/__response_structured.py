@@ -1,6 +1,8 @@
 from django.utils.deprecation import MiddlewareMixin
 
-from gando.http.response import JsonResponse as Response
+from gando.http.responses import JsonResponse as Response
+from rest_framework.response import Response as DRFResponse
+
 
 from .__request_monitor import Monitor
 from .__request_response_message import ResponseMessages
@@ -17,7 +19,7 @@ class JsonResponse(MiddlewareMixin):
         if isinstance(response, Response):
             msg = request.response_messages.export()
             dmsg = msg.model_dump()
-            rsp = Response(status=self.__get_status_code(response), **dmsg, **response.__dict__)
+            rsp = DRFResponse(status=self.__get_status_code(response), **dmsg, **response.__dict__)
         return rsp
 
     def __get_status_code(self, response):

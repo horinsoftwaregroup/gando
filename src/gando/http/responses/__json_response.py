@@ -34,7 +34,7 @@ class JsonResponse(DJJsonResponse):
         )
 
         context = {
-            'success': not (bool(msgs['error_messages']) and bool(msgs['exception_messages'])),
+            'success': not (bool(msgs['error_messages']) or bool(msgs['exception_messages'])),
             'has_warning': bool(msgs['warning_messages']),
             'monitor': monitor,
             'messages': {
