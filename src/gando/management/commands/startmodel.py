@@ -42,6 +42,9 @@ class BaseFiles:
         self.serializers: str = python_file_maker(path=application_path, name='serializers')
         self.urls: str = python_file_maker(path=application_path, name='urls')
         self.views: str = python_file_maker(path=application_path, name='views')
+        self.services: str = python_file_maker(path=application_path, name='services')
+        self.interfaces: str = python_file_maker(path=application_path, name='interfaces')
+        self.apis: str = python_file_maker(path=application_path, name='apis')
 
 
 class BasePackageInfo:
@@ -70,6 +73,12 @@ class BasePackages:
             path=package_maker(parent_path=self.repo.path, name='urls'))
         self.repo__views: BasePackageInfo = BasePackageInfo(
             path=package_maker(parent_path=self.repo.path, name='views'))
+        self.repo__services: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='services'))
+        self.repo__interfaces: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='interfaces'))
+        self.repo__apis: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo.path, name='apis'))
 
 
 class Command(BaseCommand):
@@ -114,6 +123,9 @@ class Command(BaseCommand):
         self.initial_views()
         self.initial_urlpatterns()
         self.initial_schemas()
+        self.initial_services()
+        self.initial_interfaces()
+        self.initial_apis()
 
     __model_name: str | None = None
 
@@ -366,3 +378,30 @@ class Command(BaseCommand):
 
         with open(self.base_files.schemas, 'a') as f:
             f.write(f"\nfrom .repo.schemas.models import {self.model_name}ModelSchema\n")
+
+    def initial_services(self):
+        file_path = python_file_maker(self.base_packages.repo__services.path, self.model_name)
+
+        with open(file_path, 'w') as f:
+            f.write('')
+
+        with open(self.base_files.services, 'w') as f:
+            f.write('')
+
+    def initial_interfaces(self):
+        file_path = python_file_maker(self.base_packages.repo__interfaces.path, self.model_name)
+
+        with open(file_path, 'w') as f:
+            f.write('')
+
+        with open(self.base_files.interfaces, 'w') as f:
+            f.write('')
+
+    def initial_apis(self):
+        dir_path = package_maker(self.base_packages.repo__apis.path, self.model_name)
+
+        with open(os.path.join(dir_path, '__base.py'), 'w') as f:
+            f.write(f"")
+
+        with open(self.base_files.serializers, 'a') as f:
+            f.write(f"\nfrom .repo.serializers.{self.model_name_snake_case} import *\n")
