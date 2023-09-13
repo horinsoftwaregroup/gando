@@ -80,7 +80,10 @@ class JsonResponse(DJJsonResponse):
             many = True
 
         elif isinstance(data, dict):
-            data, monitor = self.__monitor_detector(data)
+            data, mntr = self.__monitor_detector(data)
+            mntr.update(monitor)
+            monitor = mntr
+
             data, msgs__ = self.__messages_detector(data)
             if bool(data.get('results')):
                 many = True
