@@ -1,6 +1,8 @@
 from abc import abstractmethod
+from types import NoneType
 
 from django.core.cache import cache as djcache
+
 from gando.config import SETTINGS
 
 
