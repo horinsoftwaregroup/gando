@@ -1,0 +1,139 @@
+from abc import abstractmethod
+
+from django.core.cache import cache as djcache
+from gando.config import SETTINGS
+
+
+class Service:
+    """
+    - Config:
+        - type:
+            - class
+
+        - attrs:
+            - cache:
+                - type:
+                    - bool
+                - descriptions:
+                    - Using this variable,
+                    you can activate or deactivate the service's automatic caching system.
+                    The default mode is disabled.
+
+            - cache_key:
+                - type:
+                    - str or tuple or list or set
+                - descriptions:
+                    - You can choose a variable or a combination of a number of variables as
+                    a unique key for caching.
+                    If there is no such key,
+                    the same name is selected as the unique key.
+
+            - cache_prefix_key:
+                - type:
+                    - str
+
+            - cache_middle_separator_key:
+                - type:
+                    - str
+
+            - cache_suffix_key:
+                - type:
+                    - str
+
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def execute(self, reset_cache=False, *args, **kwargs):
+        if SETTINGS.CACHING and self.cache:
+            if reset_cache:
+                output = self.service_output_handler(*args, **kwargs)
+            else:
+                tmp = djcache.get(key=self.cache_unique_key())
+                if tmp is None:
+                    tmp = self.service_output_handler(self, *args, **kwargs)
+                output = tmp
+            djcache.set(key=self.cache_unique_key(), value=output)
+        else:
+            output = self.service_output_handler(self, *args, **kwargs)
+
+        ret = output
+        return ret
+
+    @abstractmethod
+    def service_output_handler(self, *args, **kwargs):
+        pass
+
+    @property
+    def cache_prefix_key(self):
+        if (
+            hasattr(self, 'Config') and
+            hasattr(self.Config, 'cache_prefix_key') and
+            isinstance(self.Config.cache_prefix_key, str)
+        ):
+            return self.Config.cache_prefix_key
+        return ''
+
+    @property
+    def cache_suffix_key(self):
+        if (
+            hasattr(self, 'Config') and
+            hasattr(self.Config, 'cache_suffix_key') and
+            isinstance(self.Config.cache_suffix_key, str)
+        ):
+            return self.Config.cache_suffix_key
+
+        return ''
+
+    @property
+    def cache_middle_separator_key(self):
+        if (
+            hasattr(self, 'Config') and
+            hasattr(self.Config, 'cache_middle_separator_key') and
+            isinstance(self.Config.cache_middle_separator_key, str)
+        ):
+            return self.Config.cache_middle_separator_key
+
+        return ''
+
+    @property
+    def cache(self):
+        if (
+            hasattr(self, 'Config') and
+            hasattr(self.Config, 'cache') and
+            isinstance(self.Config.cache, bool)
+        ):
+            return self.Config.cache
+
+        return False
+
+    def cache_unique_key(self):
+        if hasattr(self, 'Config') and hasattr(self.Config, 'cache_key'):
+            keys = []
+            if isinstance(self.Config.cache_key, str):
+                keys = [self.Config.cache_key]
+
+            elif (
+                isinstance(self.Config.cache_key, tuple) or
+                isinstance(self.Config.cache_key, list) or
+                isinstance(self.Config.cache_key, set)
+            ):
+                keys = [i for i in self.Config.cache_key]
+
+            else:
+                pass
+
+            ret = (
+                self.cache_prefix_key +
+                self.cache_middle_separator_key.join(
+                    str(
+                        getattr(self, i) if hasattr(self, i) else i.upper()
+                    ) for i in keys
+                ) +
+                self.cache_suffix_key
+            )
+            return ret
+
+        return ''
