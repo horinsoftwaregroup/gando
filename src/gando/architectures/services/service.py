@@ -40,7 +40,9 @@ class Service:
                 - type:
                     - str
 
-
+            - cache_timeout:
+                - type:
+                    - int or None
     """
 
     def __init__(self, *args, **kwargs):
@@ -108,6 +110,14 @@ class Service:
             return self.Config.cache
 
         return False
+
+    @property
+    def cache_timeout(self):
+        ret = 5
+        if hasattr(self, 'Config') and hasattr(self.Config, 'cache_timeout'):
+            if isinstance(self.Config.cache_timeout, int) or isinstance(self.Config.cache_timeout, NoneType):
+                ret = self.Config.cache_timeout
+        return ret
 
     def cache_unique_key(self):
         if hasattr(self, 'Config') and hasattr(self.Config, 'cache_key'):
