@@ -7,7 +7,8 @@ setuptools.setup(
     name='gando',
     author='Hydra',
     author_email='navidsoleymani@ymail.com',
-    description='A framework based on Django that has tried to gather together the tools needed in the process of creating a large project.',
+    description="A framework based on Django that has tried to gather together the tools "
+                "needed in the process of creating a large project.",
     keywords='django',
     long_description=long_description,
     long_description_content_type='text/markdown',
