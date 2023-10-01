@@ -1,9 +1,19 @@
 from abc import abstractmethod
 from types import NoneType
+from pydantic import BaseModel
 
 from django.core.cache import cache as djcache
 
 from gando.config import SETTINGS
+
+
+class CacheConfig(BaseModel):
+    cache_prefix_key: str | None = None
+    cache_suffix_key: str | None = None
+    cache_middle_separator_key: str | None = None
+    cache: bool | None = None
+    cache_timeout: int | None = None
+    cache_unique_key: str | tuple | list | set | None = None
 
 
 class BaseService:
@@ -48,7 +58,7 @@ class BaseService:
     """
 
     def __init__(self, *args, **kwargs):
-        pass
+        self.__input_cache_config: CacheConfig = CacheConfig(**kwargs)
 
     def execute(self, reset_cache=False, *args, **kwargs):
         if SETTINGS.CACHING and self.cache:
@@ -72,16 +82,23 @@ class BaseService:
 
     @property
     def cache_prefix_key(self):
+        if self.__input_cache_config.cache_prefix_key is not None:
+            return self.__input_cache_config.cache_prefix_key
+
         if (
             hasattr(self, 'Config') and
             hasattr(self.Config, 'cache_prefix_key') and
             isinstance(self.Config.cache_prefix_key, str)
         ):
             return self.Config.cache_prefix_key
+
         return ''
 
     @property
     def cache_suffix_key(self):
+        if self.__input_cache_config.cache_suffix_key is not None:
+            return self.__input_cache_config.cache_suffix_key
+
         if (
             hasattr(self, 'Config') and
             hasattr(self.Config, 'cache_suffix_key') and
@@ -93,6 +110,9 @@ class BaseService:
 
     @property
     def cache_middle_separator_key(self):
+        if self.__input_cache_config.cache_middle_separator_key is not None:
+            return self.__input_cache_config.cache_middle_separator_key
+
         if (
             hasattr(self, 'Config') and
             hasattr(self.Config, 'cache_middle_separator_key') and
@@ -104,6 +124,9 @@ class BaseService:
 
     @property
     def cache(self):
+        if self.__input_cache_config.cache is not None:
+            return self.__input_cache_config.cache
+
         if (
             hasattr(self, 'Config') and
             hasattr(self.Config, 'cache') and
@@ -115,13 +138,20 @@ class BaseService:
 
     @property
     def cache_timeout(self):
+        if self.__input_cache_config.cache_timeout is not None:
+            return self.__input_cache_config.cache_timeout
+
         ret = 5
         if hasattr(self, 'Config') and hasattr(self.Config, 'cache_timeout'):
             if isinstance(self.Config.cache_timeout, int) or isinstance(self.Config.cache_timeout, NoneType):
                 ret = self.Config.cache_timeout
+
         return ret
 
     def cache_unique_key(self):
+        if self.__input_cache_config.cache_unique_key is not None:
+            return self.__input_cache_config.cache_unique_key
+
         if hasattr(self, 'Config') and hasattr(self.Config, 'cache_key'):
             keys = []
             if isinstance(self.Config.cache_key, str):
