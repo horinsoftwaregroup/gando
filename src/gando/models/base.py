@@ -17,9 +17,13 @@ class AbstractBaseModel(models.Model):
         auto_now=True,
         db_index=True,
     )
-    available = models.BooleanField(
-        default=True,
-        db_index=True,
+    available = models.IntegerField(
+        max_length=1,
+        default=1,
+        choices=(
+            (0, 'No'),
+            (1, 'Yes'),
+        )
     )
 
     class Meta:
