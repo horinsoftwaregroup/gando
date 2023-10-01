@@ -17,7 +17,7 @@ class AbstractBaseModel(models.Model):
         auto_now=True,
         db_index=True,
     )
-    is_active = models.BooleanField(
+    available = models.BooleanField(
         default=True,
         db_index=True,
     )
