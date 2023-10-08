@@ -156,7 +156,7 @@ class Command(BaseCommand):
     base_packages: BasePackages | None = None
 
     def initial_api(self):
-        file_path = python_file_maker(self.base_packages.repo__apis.path, self.api_name, private_=False)
+        file_path = python_file_maker(self.base_packages.repo__apis.path, self.api_name, private_=True)
 
         with open(file_path, 'w') as f:
             f.write(
@@ -164,7 +164,7 @@ class Command(BaseCommand):
                 f"\n"
                 f"\n"
                 f"\n"
-                f"class {self.api_name}Service(BaseAPI):"
+                f"class {self.api_name}API(BaseAPI):"
                 f"\n"
                 f"    def __init__(self, *args, **kwargs):"
                 f"\n"

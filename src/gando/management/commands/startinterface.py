@@ -164,7 +164,7 @@ class Command(BaseCommand):
                 f"\n"
                 f"\n"
                 f"\n"
-                f"class {self.interface_name}Service(BaseInterface):"
+                f"class {self.interface_name}Interface(BaseInterface):"
                 f"\n"
                 f"    def __init__(self, *args, **kwargs):"
                 f"\n"
