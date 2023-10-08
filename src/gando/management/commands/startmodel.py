@@ -113,9 +113,6 @@ class Command(BaseCommand):
         self.initial_admin()
         self.initial_urlpatterns()
         self.initial_schemas()
-        self.initial_services()
-        self.initial_interfaces()
-        self.initial_apis()
 
     __model_name: str | None = None
 
