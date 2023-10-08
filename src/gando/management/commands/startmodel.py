@@ -234,28 +234,32 @@ class Command(BaseCommand):
         file_path = python_file_maker(self.base_packages.repo__urls.path, self.model_name)
 
         with open(file_path, 'w') as f:
-            f.write(f"from django.urls import path\n\n"
-                    f"app_name = '{self.model_name_snake_case}s'\n"
-                    f"urlpatterns = [\n"
-                    f"#    path('', SampleAPI.as_view(), name='sample'),\n"
-                    f"]\n")
+            f.write(
+                f"from django.urls import path\n\n"
+                f"app_name = '{self.model_name_snake_case}s'\n"
+                f"urlpatterns = [\n"
+                f"    # path('', SampleAPI.as_view(), name='sample'),\n"
+                f"]\n"
+            )
 
-        with open(self.base_files.urls, 'r+') as f:
-            txt = f.read()
-
-            if txt.find('urlpatterns') == -1:
-                f.write(f"from django.urls import path, include\n\n\n"
-                        f"app_name = '{self.app_label}'\n"
-                        f"urlpatterns = [\n"
-                        f"    path('{casing(self.model_name, to_case=KEBAB_CASE)}s/', "
-                        f"include('{self.app_label}.repo.urls.{self.model_name_snake_case}')),\n"
-                        f"]\n")
-            else:
-                f.write('')
-                f.write(f"{txt[:txt.find(']')]}\n"
-                        f"\n    path('{casing(self.model_name, to_case=KEBAB_CASE)}s/', "
-                        f"include('{self.app_label}.repo.urls.{self.model_name_snake_case}')),\n"
-                        f"{txt[txt.find(']'):]}")
+        default_txt = (
+            f"from django.urls import path, include\n\n\n"
+            f"app_name = '{self.app_label}'\n"
+            f"urlpatterns = [\n"
+            f"]\n"
+        )
+        u_fp = self.base_files.urls
+        if self.__find_in_file(u_fp, 'urlpatterns') is not None:
+            txt = self.__file_content(u_fp)
+        else:
+            txt = default_txt
+        with open(self.base_files.urls, 'w') as f:
+            f.write(
+                f"{txt[:txt.find(']')]}\n"
+                f"\n    path('{casing(self.model_name, to_case=KEBAB_CASE)}s/', "
+                f"include('{self.app_label}.repo.urls.{self.model_name_snake_case}')),"
+                f"{txt[txt.find(']'):]}"
+            )
 
     def initial_schemas(self):
         file_path = python_file_maker(self.base_packages.repo__schemas__models.path, self.model_name, private_=True)
@@ -281,6 +285,28 @@ class Command(BaseCommand):
             lines = f.read()
             if lines[-1] != '\n':
                 tmp = '\n'
+
+        ret = tmp
+        return ret
+
+    @staticmethod
+    def __find_in_file(file_name, sub):
+        tmp = ''
+        with open(file_name, 'r') as f:
+            txt = f.read()
+            if txt.find(sub) == -1:
+                tmp = None
+
+        ret = tmp
+        return ret
+
+    @staticmethod
+    def __file_content(file_name, default=''):
+        tmp = default
+        with open(file_name, 'r') as f:
+            txt = f.read()
+            if len(txt) != 0:
+                tmp = str(txt)
 
         ret = tmp
         return ret
