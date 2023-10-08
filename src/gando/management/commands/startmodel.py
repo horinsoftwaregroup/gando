@@ -38,13 +38,7 @@ class BaseFiles:
     def __init__(self, application_path: str):
         self.admin: str = python_file_maker(path=application_path, name='admin')
         self.models: str = python_file_maker(path=application_path, name='models')
-        self.schemas: str = python_file_maker(path=application_path, name='schemas')
-        self.serializers: str = python_file_maker(path=application_path, name='serializers')
         self.urls: str = python_file_maker(path=application_path, name='urls')
-        self.views: str = python_file_maker(path=application_path, name='views')
-        self.services: str = python_file_maker(path=application_path, name='services')
-        self.interfaces: str = python_file_maker(path=application_path, name='interfaces')
-        self.apis: str = python_file_maker(path=application_path, name='apis')
 
 
 class BasePackageInfo:
@@ -67,12 +61,10 @@ class BasePackages:
             path=package_maker(parent_path=self.repo__schemas.path, name='models'))
         self.repo__schemas__apis: BasePackageInfo = BasePackageInfo(
             path=package_maker(parent_path=self.repo__schemas.path, name='apis'))
-        self.repo__serializers: BasePackageInfo = BasePackageInfo(
-            path=package_maker(parent_path=self.repo.path, name='serializers'))
+        self.repo__schemas__apis: BasePackageInfo = BasePackageInfo(
+            path=package_maker(parent_path=self.repo__schemas.path, name='services'))
         self.repo__urls: BasePackageInfo = BasePackageInfo(
             path=package_maker(parent_path=self.repo.path, name='urls'))
-        self.repo__views: BasePackageInfo = BasePackageInfo(
-            path=package_maker(parent_path=self.repo.path, name='views'))
         self.repo__services: BasePackageInfo = BasePackageInfo(
             path=package_maker(parent_path=self.repo.path, name='services'))
         self.repo__interfaces: BasePackageInfo = BasePackageInfo(
@@ -119,8 +111,6 @@ class Command(BaseCommand):
         self.initial_model()
 
         self.initial_admin()
-        self.initial_serializers()
-        self.initial_views()
         self.initial_urlpatterns()
         self.initial_schemas()
         self.initial_services()
@@ -201,10 +191,10 @@ class Command(BaseCommand):
             f.write(f'from django.db import models\n\n\nclass {self.model_name}(models.Model):\n    pass\n')
 
         with open(self.base_packages.repo__models.initial_path, 'a') as f:
-            f.write(f'\nfrom .__{self.model_name_snake_case} import {self.model_name} as {self.model_name}Model\n')
+            f.write(f'\nfrom .__{self.model_name_snake_case} import {self.model_name} as {self.model_name}Model')
 
         with open(self.base_files.models, 'a') as f:
-            f.write(f'\nfrom .repo.models import {self.model_name}Model\n')
+            f.write(f'\nfrom .repo.models import {self.model_name}Model')
 
     def initial_admin(self):
         file_path = python_file_maker(self.base_packages.repo__admin.path, self.model_name, private_=True)
@@ -213,138 +203,22 @@ class Command(BaseCommand):
             f.write(f"from django.contrib import admin\n\n"
                     f"from {self.app_label}.models import {self.model_name}Model as Model\n\n\n"
                     f"@admin.register(Model)\n"
-                    f"class {self.model_name}(admin.ModelAdmin):\n    pass\n")
+                    f"class {self.model_name}Admin(admin.ModelAdmin):\n    pass\n")
 
         with open(self.base_packages.repo__admin.initial_path, 'a') as f:
-            f.write(f'\nfrom .__{self.model_name_snake_case} import {self.model_name} as {self.model_name}Admin\n')
+            f.write(f'\nfrom .__{self.model_name_snake_case} import {self.model_name}Admin')
 
         with open(self.base_files.admin, 'a') as f:
-            f.write(f'\nfrom .repo.admin import {self.model_name}Admin\n')
-
-    def initial_serializers(self):
-        dir_path = package_maker(self.base_packages.repo__serializers.path, self.model_name)
-
-        with open(os.path.join(dir_path, '__base.py'), 'w') as f:
-            f.write(f"from rest_framework.serializers import ModelSerializer\n\n"
-                    f"from {self.app_label}.models import {self.model_name}Model as Model\n\n\n"
-                    f"class Base(ModelSerializer):\n"
-                    f"    class Meta:\n"
-                    f"        model = Model\n"
-                    f"        fields = '__all__'\n")
-
-        with open(os.path.join(dir_path, '__create.py'), 'w') as f:
-            f.write(f"from .__base import Base\n\n\nclass Create(Base):\n    pass\n")
-
-        with open(os.path.join(dir_path, '__list.py'), 'w') as f:
-            f.write(f"from .__base import Base\n\n\nclass List(Base):\n    pass\n")
-
-        with open(os.path.join(dir_path, '__retrieve.py'), 'w') as f:
-            f.write(f"from .__base import Base\n\n\nclass Retrieve(Base):\n    pass\n")
-
-        with open(os.path.join(dir_path, '__update.py'), 'w') as f:
-            f.write(f"from .__base import Base\n\n\nclass Update(Base):\n    pass\n")
-
-        with open(os.path.join(dir_path, '__destroy.py'), 'w') as f:
-            f.write(f"from .__base import Base\n\n\nclass Destroy(Base):\n    pass\n")
-
-        with open(os.path.join(dir_path, '__init__.py'), 'a') as f:
-            f.write(f"from .__create import Create as {self.model_name}CreateSerializer\n"
-                    f"from .__list import List as {self.model_name}ListSerializer\n"
-                    f"from .__retrieve import Retrieve as {self.model_name}RetrieveSerializer\n"
-                    f"from .__update import Update as {self.model_name}UpdateSerializer\n"
-                    f"from .__destroy import Destroy as {self.model_name}DestroySerializer\n")
-
-        with open(self.base_files.serializers, 'a') as f:
-            f.write(f"\nfrom .repo.serializers.{self.model_name_snake_case} import (\n"
-                    f"    {self.model_name}CreateSerializer,\n"
-                    f"    {self.model_name}ListSerializer,\n"
-                    f"    {self.model_name}RetrieveSerializer,\n"
-                    f"    {self.model_name}UpdateSerializer,\n"
-                    f"    {self.model_name}DestroySerializer,\n)\n")
-
-    def initial_views(self):
-        dir_path = package_maker(self.base_packages.repo__views.path, self.model_name)
-
-        with open(os.path.join(dir_path, '__base.py'), 'w') as f:
-            f.write(f"from {self.app_label}.models import {self.model_name}Model as Model\n\n\n"
-                    f"class Base:\n"
-                    f"    queryset = Model.objects.all()\n")
-
-        with open(os.path.join(dir_path, '__create.py'), 'w') as f:
-            f.write(f"from rest_framework.generics import CreateAPIView as APIView\n\n"
-                    f"from {self.app_label}.serializers import {self.model_name}CreateSerializer as Serializer\n\n"
-                    f"from .__base import Base\n\n\n"
-                    f"class Create(Base, APIView):\n"
-                    f"    serializer_class = Serializer\n")
-
-        with open(os.path.join(dir_path, '__list.py'), 'w') as f:
-            f.write(f"from django_filters.rest_framework import DjangoFilterBackend\n\n"
-                    f"from rest_framework.filters import SearchFilter, OrderingFilter\n"
-                    f"from rest_framework.generics import ListAPIView as APIView\n\n"
-                    f"from {self.app_label}.serializers import {self.model_name}ListSerializer as Serializer\n\n"
-                    f"from .__base import Base\n\n\n"
-                    f"class List(Base, APIView):\n"
-                    f"    serializer_class = Serializer\n"
-                    f"    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter,)\n")
-
-        with open(os.path.join(dir_path, '__retrieve.py'), 'w') as f:
-            f.write(f"from rest_framework.generics import RetrieveAPIView as APIView\n\n"
-                    f"from {self.app_label}.serializers import {self.model_name}RetrieveSerializer as Serializer\n\n"
-                    f"from .__base import Base\n\n\n"
-                    f"class Retrieve(Base, APIView):\n"
-                    f"    serializer_class = Serializer\n"
-                    f"    lookup_field = 'pk'\n")
-
-        with open(os.path.join(dir_path, '__update.py'), 'w') as f:
-            f.write(f"from rest_framework.generics import UpdateAPIView as APIView\n\n"
-                    f"from {self.app_label}.serializers import {self.model_name}UpdateSerializer as Serializer\n\n"
-                    f"from .__base import Base\n\n\n"
-                    f"class Update(Base, APIView):\n"
-                    f"    serializer_class = Serializer\n"
-                    f"    lookup_field = 'pk'\n")
-
-        with open(os.path.join(dir_path, '__destroy.py'), 'w') as f:
-            f.write(f"from rest_framework.generics import DestroyAPIView as APIView\n\n"
-                    f"from {self.app_label}.serializers import {self.model_name}DestroySerializer as Serializer\n\n"
-                    f"from .__base import Base\n\n\n"
-                    f"class Destroy(Base, APIView):\n"
-                    f"    serializer_class = Serializer\n"
-                    f"    lookup_field = 'pk'\n")
-
-        with open(os.path.join(dir_path, '__init__.py'), 'a') as f:
-            f.write(f"from .__create import Create as {self.model_name}CreateAPIView\n"
-                    f"from .__list import List as {self.model_name}ListAPIView\n"
-                    f"from .__retrieve import Retrieve as {self.model_name}RetrieveAPIView\n"
-                    f"from .__update import Update as {self.model_name}UpdateAPIView\n"
-                    f"from .__destroy import Destroy as {self.model_name}DestroyAPIView\n")
-
-        with open(self.base_files.views, 'a') as f:
-            f.write(f"\nfrom .repo.views.{self.model_name_snake_case} import (\n"
-                    f"    {self.model_name}CreateAPIView,\n"
-                    f"    {self.model_name}ListAPIView,\n"
-                    f"    {self.model_name}RetrieveAPIView,\n"
-                    f"    {self.model_name}UpdateAPIView,\n"
-                    f"    {self.model_name}DestroyAPIView,\n)\n")
+            f.write(f'\nfrom .repo.admin import {self.model_name}Admin')
 
     def initial_urlpatterns(self):
         file_path = python_file_maker(self.base_packages.repo__urls.path, self.model_name)
 
         with open(file_path, 'w') as f:
             f.write(f"from django.urls import path\n\n"
-                    f"from {self.app_label}.views import (\n"
-                    f"    {self.model_name}CreateAPIView as CreateAPIView,\n"
-                    f"    {self.model_name}ListAPIView as ListAPIView,\n"
-                    f"    {self.model_name}RetrieveAPIView as RetrieveAPIView,\n"
-                    f"    {self.model_name}UpdateAPIView as UpdateAPIView,\n"
-                    f"    {self.model_name}DestroyAPIView as DestroyAPIView,\n"
-                    f")\n\n\n"
                     f"app_name = '{self.model_name_snake_case}s'\n"
                     f"urlpatterns = [\n"
-                    f"    path('', CreateAPIView.as_view(), name='create'),\n"
-                    f"    path('', ListAPIView.as_view(), name='list'),\n"
-                    f"    path('<int:pk>/', RetrieveAPIView.as_view(), name='retrieve'),\n"
-                    f"    path('<int:pk>/', UpdateAPIView.as_view(), name='update'),\n"
-                    f"    path('<int:pk>/', DestroyAPIView.as_view(), name='destroy'),\n"
+                    f"#    path('', SampleAPI.as_view(), name='sample'),\n"
                     f"]\n")
 
         with open(self.base_files.urls, 'r+') as f:
@@ -367,41 +241,12 @@ class Command(BaseCommand):
     def initial_schemas(self):
         file_path = python_file_maker(self.base_packages.repo__schemas__models.path, self.model_name, private_=True)
         with open(file_path, 'w') as f:
-            f.write(f"from pydantic import BaseModel\n\n\n"
-                    f"class {self.model_name}(BaseModel):\n"
-                    f"    id: int | None = None\n"
-                    f"    pk: int | None = None\n")
+            f.write(
+                f"from pydantic import BaseModel\n\n\n"
+                f"class {self.model_name}ModelSchema(BaseModel):\n"
+                f"    id: int | None = None\n"
+            )
 
         with open(self.base_packages.repo__schemas__models.initial_path, 'a') as f:
             f.write(
-                f"\nfrom .__{self.model_name_snake_case} import {self.model_name} as {self.model_name}ModelSchema\n")
-
-        with open(self.base_files.schemas, 'a') as f:
-            f.write(f"\nfrom .repo.schemas.models import {self.model_name}ModelSchema\n")
-
-    def initial_services(self):
-        file_path = python_file_maker(self.base_packages.repo__services.path, self.model_name)
-
-        with open(file_path, 'w') as f:
-            f.write('')
-
-        with open(self.base_files.services, 'w') as f:
-            f.write('')
-
-    def initial_interfaces(self):
-        file_path = python_file_maker(self.base_packages.repo__interfaces.path, self.model_name)
-
-        with open(file_path, 'w') as f:
-            f.write('')
-
-        with open(self.base_files.interfaces, 'w') as f:
-            f.write('')
-
-    def initial_apis(self):
-        dir_path = package_maker(self.base_packages.repo__apis.path, self.model_name)
-
-        with open(os.path.join(dir_path, '__base.py'), 'w') as f:
-            f.write(f"")
-
-        with open(self.base_files.serializers, 'a') as f:
-            f.write(f"\nfrom .repo.serializers.{self.model_name_snake_case} import *\n")
+                f"\nfrom .__{self.model_name_snake_case} import {self.model_name}ModelSchema\n")
