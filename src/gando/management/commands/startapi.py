@@ -171,6 +171,13 @@ class Command(BaseCommand):
                 f"        super().__init__(*args, **kwargs)"
                 f"\n"
             )
+        i_fp = self.base_packages.repo__apis.initial_path
+        with open(i_fp, 'a') as f:
+            f.write(
+                f"{self.__new_line(i_fp)}"
+                f"from .__{self.api_name_snake_case} import {self.api_name}API"
+                f"\n"
+            )
 
     def initial_schemas(self):
         p_path = package_maker(
