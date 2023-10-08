@@ -187,26 +187,48 @@ class Command(BaseCommand):
         with open(file_path, 'w') as f:
             f.write(f'from django.db import models\n\n\nclass {self.model_name}(models.Model):\n    pass\n')
 
-        with open(self.base_packages.repo__models.initial_path, 'a') as f:
-            f.write(f'\nfrom .__{self.model_name_snake_case} import {self.model_name} as {self.model_name}Model')
+        i_fp = self.base_packages.repo__models.initial_path
+        with open(i_fp, 'a') as f:
+            f.write(
+                f"{self.__new_line(i_fp)}"
+                f"from .__{self.model_name_snake_case} import {self.model_name} as {self.model_name}Model"
+                f"{self.__new_line(i_fp)}"
+            )
 
-        with open(self.base_files.models, 'a') as f:
-            f.write(f'\nfrom .repo.models import {self.model_name}Model')
+        m_fp = self.base_files.models
+        with open(m_fp, 'a') as f:
+            f.write(
+                f"{self.__new_line(m_fp)}"
+                f"from .repo.models import {self.model_name}Model"
+                f"{self.__new_line(m_fp)}"
+            )
 
     def initial_admin(self):
         file_path = python_file_maker(self.base_packages.repo__admin.path, self.model_name, private_=True)
 
         with open(file_path, 'w') as f:
-            f.write(f"from django.contrib import admin\n\n"
-                    f"from {self.app_label}.models import {self.model_name}Model as Model\n\n\n"
-                    f"@admin.register(Model)\n"
-                    f"class {self.model_name}Admin(admin.ModelAdmin):\n    pass\n")
+            f.write(
+                f"from django.contrib import admin\n\n"
+                f"from {self.app_label}.models import {self.model_name}Model as Model\n\n\n"
+                f"@admin.register(Model)\n"
+                f"class {self.model_name}Admin(admin.ModelAdmin):\n    pass\n"
+            )
 
-        with open(self.base_packages.repo__admin.initial_path, 'a') as f:
-            f.write(f'\nfrom .__{self.model_name_snake_case} import {self.model_name}Admin')
+        i_fp = self.base_packages.repo__admin.initial_path
+        with open(i_fp, 'a') as f:
+            f.write(
+                f"{self.__new_line(i_fp)}"
+                f"from .__{self.model_name_snake_case} import {self.model_name}Admin"
+                f"{self.__new_line(i_fp)}"
+            )
 
-        with open(self.base_files.admin, 'a') as f:
-            f.write(f'\nfrom .repo.admin import {self.model_name}Admin')
+        a_fp = self.base_files.admin
+        with open(a_fp, 'a') as f:
+            f.write(
+                f"{self.__new_line(a_fp)}"
+                f"from .repo.admin import {self.model_name}Admin"
+                f"{self.__new_line(a_fp)}"
+            )
 
     def initial_urlpatterns(self):
         file_path = python_file_maker(self.base_packages.repo__urls.path, self.model_name)
@@ -244,6 +266,21 @@ class Command(BaseCommand):
                 f"    id: int | None = None\n"
             )
 
-        with open(self.base_packages.repo__schemas__models.initial_path, 'a') as f:
+        i_fp = self.base_packages.repo__schemas__models.initial_path
+        with open(i_fp, 'a') as f:
             f.write(
-                f"\nfrom .__{self.model_name_snake_case} import {self.model_name}ModelSchema\n")
+                f"{self.__new_line(i_fp)}"
+                f"from .__{self.model_name_snake_case} import {self.model_name}ModelSchema"
+                f"{self.__new_line(i_fp)}"
+            )
+
+    @staticmethod
+    def __new_line(file_name):
+        tmp = ''
+        with open(file_name, 'r') as f:
+            lines = f.read()
+            if lines[-1] != '\n':
+                tmp = '\n'
+
+        ret = tmp
+        return ret
