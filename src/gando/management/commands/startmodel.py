@@ -192,7 +192,7 @@ class Command(BaseCommand):
             f.write(
                 f"{self.__new_line(i_fp)}"
                 f"from .__{self.model_name_snake_case} import {self.model_name} as {self.model_name}Model"
-                f"{self.__new_line(i_fp)}"
+                f"\n"
             )
 
         m_fp = self.base_files.models
@@ -200,7 +200,7 @@ class Command(BaseCommand):
             f.write(
                 f"{self.__new_line(m_fp)}"
                 f"from .repo.models import {self.model_name}Model"
-                f"{self.__new_line(m_fp)}"
+                f"\n"
             )
 
     def initial_admin(self):
@@ -219,7 +219,7 @@ class Command(BaseCommand):
             f.write(
                 f"{self.__new_line(i_fp)}"
                 f"from .__{self.model_name_snake_case} import {self.model_name}Admin"
-                f"{self.__new_line(i_fp)}"
+                f"\n"
             )
 
         a_fp = self.base_files.admin
@@ -227,7 +227,7 @@ class Command(BaseCommand):
             f.write(
                 f"{self.__new_line(a_fp)}"
                 f"from .repo.admin import {self.model_name}Admin"
-                f"{self.__new_line(a_fp)}"
+                f"\n"
             )
 
     def initial_urlpatterns(self):
@@ -271,7 +271,7 @@ class Command(BaseCommand):
             f.write(
                 f"{self.__new_line(i_fp)}"
                 f"from .__{self.model_name_snake_case} import {self.model_name}ModelSchema"
-                f"{self.__new_line(i_fp)}"
+                f"\n"
             )
 
     @staticmethod
