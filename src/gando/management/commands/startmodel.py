@@ -61,7 +61,7 @@ class BasePackages:
             path=package_maker(parent_path=self.repo__schemas.path, name='models'))
         self.repo__schemas__apis: BasePackageInfo = BasePackageInfo(
             path=package_maker(parent_path=self.repo__schemas.path, name='apis'))
-        self.repo__schemas__apis: BasePackageInfo = BasePackageInfo(
+        self.repo__schemas__services: BasePackageInfo = BasePackageInfo(
             path=package_maker(parent_path=self.repo__schemas.path, name='services'))
         self.repo__urls: BasePackageInfo = BasePackageInfo(
             path=package_maker(parent_path=self.repo.path, name='urls'))
@@ -255,9 +255,11 @@ class Command(BaseCommand):
             txt = default_txt
         with open(self.base_files.urls, 'w') as f:
             f.write(
-                f"{txt[:txt.find(']')]}\n"
-                f"\n    path('{casing(self.model_name, to_case=KEBAB_CASE)}s/', "
+                f"{txt[:txt.find(']')]}"
+                f"\n"
+                f"    path('{casing(self.model_name, to_case=KEBAB_CASE)}s/', "
                 f"include('{self.app_label}.repo.urls.{self.model_name_snake_case}')),"
+                f"\n"
                 f"{txt[txt.find(']'):]}"
             )
 
