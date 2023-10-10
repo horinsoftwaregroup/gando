@@ -1,6 +1,6 @@
 from django.utils.decorators import classonlymethod
 
-from gando.utils.responses.schemas import ResponseSchema
+from gando.http.responses.schemas import ResponseSchema
 from gando.http.requests.methods import (
     GET,
     POST,
