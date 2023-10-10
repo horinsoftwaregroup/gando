@@ -39,23 +39,23 @@ class BaseAPI(APIView):
         return ret
 
     def set_log_message(self, key, value):
-        log = {key, value}
+        log = {key: value}
         self.__logs_message.append(log)
 
     def set_info_message(self, key, value):
-        info = {key, value}
+        info = {key: value}
         self.__infos_message.append(info)
 
     def set_warning_message(self, key, value):
-        warning = {key, value}
+        warning = {key: value}
         self.__warnings_message.append(warning)
 
     def set_error_message(self, key, value):
-        error = {key, value}
+        error = {key: value}
         self.__errors_message.append(error)
 
     def set_exception_message(self, key, value):
-        exception = {key, value}
+        exception = {key: value}
         self.__exceptions_message.append(exception)
 
     def set_headers(self, key, value):
