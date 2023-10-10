@@ -1,1 +1,1 @@
-from .__base import BaseService
+from .__base import BaseInterface
