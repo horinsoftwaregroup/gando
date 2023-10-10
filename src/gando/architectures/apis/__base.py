@@ -7,108 +7,108 @@ class BaseAPI(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self._data = None
+        self.__data = None
 
-        self._logs_message = []
-        self._infos_message = []
-        self._warnings_message = []
-        self._errors_message = []
-        self._exceptions_message = []
+        self.__logs_message = []
+        self.__infos_message = []
+        self.__warnings_message = []
+        self.__errors_message = []
+        self.__exceptions_message = []
 
-        self._monitor: dict = dict()
+        self.__monitor: dict = dict()
 
-        self._status_code: int | None = None
+        self.__status_code: int | None = None
 
-        self._headers: dict = dict()
+        self.__headers: dict = dict()
 
     def response_context(self, data):
-        self._data = data
+        self.__data = data
         tmp = {
-            'success': self._success(),
+            'success': self.__success(),
             'status_code': self.get_status_code(),
-            'has_warning': self._has_warning(),
-            'messages': self._messages(),
-            'monitor': self._monitor,
+            'has_warning': self.__has_warning(),
+            'monitor': self.__monitor,
             'data': self.validate_data(),
-            'many': self._many(),
+            'many': self.__many(),
         }
-        if self._debug_status:
-            tmp['headers'] = self.headers
+        if self.__debug_status:
+            tmp['messages']=self.__messages()
+            tmp['headers'] = self.get_headers()
 
         ret = tmp
         return ret
 
     def set_log_message(self, key, value):
         log = {key, value}
-        self._logs_message.append(log)
+        self.__logs_message.append(log)
 
     def set_info_message(self, key, value):
         info = {key, value}
-        self._infos_message.append(info)
+        self.__infos_message.append(info)
 
     def set_warning_message(self, key, value):
         warning = {key, value}
-        self._warnings_message.append(warning)
+        self.__warnings_message.append(warning)
 
     def set_error_message(self, key, value):
         error = {key, value}
-        self._errors_message.append(error)
+        self.__errors_message.append(error)
 
     def set_exception_message(self, key, value):
         exception = {key, value}
-        self._exceptions_message.append(exception)
+        self.__exceptions_message.append(exception)
 
-    def set_headers_message(self, key, value):
-        self._headers[key] = value
+    def set_headers(self, key, value):
+        self.__headers[key] = value
 
     def get_headers(self):
-        return self._headers
+        return self.__headers
 
-    def _messages(self, ) -> dict:
+    def __messages(self, ) -> dict:
         tmp = {
-            'info': self._infos_message,
-            'warning': self._warnings_message,
-            'error': self._errors_message,
+            'info': self.__infos_message,
+            'warning': self.__warnings_message,
+            'error': self.__errors_message,
 
         }
-        if self._debug_status:
-            tmp['log'] = self._logs_message
-            tmp['exception'] = self._exceptions_message
+        if self.__debug_status:
+            tmp['log'] = self.__logs_message
+            tmp['exception'] = self.__exceptions_message
 
         ret = tmp
         return ret
 
-    def _many(self):
-        if isinstance(self._data, list):
+    def __many(self):
+        if isinstance(self.__data, list):
             return True
         return False
 
-    def _success(self):
-        if len(self._errors_message) == 0 and len(self._exceptions_message) == 0:
+    def __success(self):
+        if len(self.__errors_message) == 0 and len(self.__exceptions_message) == 0:
             return True
         return False
 
-    def _has_warning(self):
-        if len(self._warnings_message) != 0:
+    def __has_warning(self):
+        if len(self.__warnings_message) != 0:
             return True
         return False
 
     def set_status_code(self, value: int):
-        self._status_code = value
+        self.__status_code = value
 
     def get_status_code(self):
-        return self._status_code or 200
+        return self.__status_code or 200
 
     def set_monitor(self, key, value):
-        if key in self._allowed_monitor_keys:
-            self._monitor[key] = value
+        if key in self.__allowed_monitor_keys:
+            self.__monitor[key] = value
 
     @property
-    def _allowed_monitor_keys(self):
+    def __allowed_monitor_keys(self):
         return SETTINGS.MONITOR_KEYS
 
     def validate_data(self):
-        data = self._data
+        data = self.__data
 
         if isinstance(data, str):
             tmp = {'result': {'str': data}}
@@ -131,5 +131,5 @@ class BaseAPI(APIView):
         return ret
 
     @property
-    def _debug_status(self):
+    def __debug_status(self):
         return SETTINGS.DEBUG
