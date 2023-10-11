@@ -23,23 +23,23 @@ class BaseGetterService(BaseService):
 
         self.is_object = self.__is_object(**kwargs)
 
-    @abstractmethod
     @property
+    @abstractmethod
     def model(self) -> Model:
         pass
 
-    @abstractmethod
     @property
+    @abstractmethod
     def output_schema(self) -> BaseModel:
         pass
 
-    @abstractmethod
     @property
+    @abstractmethod
     def filter_schema(self) -> BaseModel:
         pass
 
-    @abstractmethod
     @property
+    @abstractmethod
     def acceptable_values(self) -> list:
         pass
 
