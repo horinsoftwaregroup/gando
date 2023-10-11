@@ -47,14 +47,22 @@ class BaseGetterService(BaseService):
         ret = self.__get_from_db()
         return ret
 
-    def __get_from_db(self):
-        query = self.__query()
-        rslt = query
+    def convert_to_schema(self, obj):
+        ret = self.output_schema(**obj) if obj else None
+        return ret
+
+    def convert_to_schema_many_true(self, objs):
+        ret = [self.convert_to_schema(i) for i in objs]
+        return ret
+
+    def get_from_db(self):
+        rslt = self.__query()
+
         if not self.is_object:
             if self.many:
-                rslt = [self.output_schema(**i) for i in query]
+                rslt = self.convert_to_schema_many_true(self.__query())
             else:
-                rslt = self.output_schema(**query) if query else None
+                rslt = self.convert_to_schema(self.__query())
 
         ret = rslt
         return ret
