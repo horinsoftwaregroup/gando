@@ -44,9 +44,7 @@ class BaseGetterService(BaseService):
         pass
 
     def service_output_handler(self, *args, **kwargs):
-        user_info = self.__get_from_db()
-
-        ret = user_info
+        ret = self.__get_from_db()
         return ret
 
     def __get_from_db(self):
