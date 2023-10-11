@@ -81,7 +81,7 @@ class BaseGetterService(BaseService):
 
     def __filters(self, **filters) -> dict:
         inst = self.filter_schema(**filters)
-        ret = inst.model_dump()
+        ret = inst.model_dump().extract()
         return ret
 
     def __many(self, *args, **kwargs) -> bool:
