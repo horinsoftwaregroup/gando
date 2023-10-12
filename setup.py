@@ -41,5 +41,6 @@ setuptools.setup(
         'djangorestframework',
         'markdown',
         'django-filter',
+        'django-simple-history',
     ],
 )
