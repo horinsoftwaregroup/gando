@@ -241,8 +241,8 @@ class ImageField(BaseMultiplyField):
                 'blank': True,
                 'null': True,
 
-                'width_field': 'width',
-                'height_field': 'height',
+                'width_field': f'{name}_width',
+                'height_field': f'{name}_height',
             }
         )
         self.sub_field_contribute_to_class(
@@ -256,17 +256,15 @@ class ImageField(BaseMultiplyField):
                 'blank': True,
                 'null': True,
 
-                'width_field': 'width',
-                'height_field': 'height',
+                'width_field': f'{name}_width',
+                'height_field': f'{name}_height',
 
                 'size': [100, 100],
                 'scale': 0.5,
+                'crop': None,
                 'quality': 75,
                 'keep_meta': True,
                 'force_format': 'PNG',
-                'format_extensions': {'PNG': '.png'},
-                'normalize_rotation': True,
-                'crop': None
             }
         )
         self.sub_field_contribute_to_class(
