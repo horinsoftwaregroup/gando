@@ -25,7 +25,6 @@ class AbstractBaseModel(models.Model):
     )
     available = models.IntegerField(
         verbose_name=_('Available'),
-        max_length=1,
         default=1,
         choices=(
             (0, 'No'),
