@@ -33,7 +33,7 @@ class AbstractBaseModel(models.Model):
         db_index=True,
     )
 
-    history = HistoricalRecords()
+    history = HistoricalRecords(inherit=True)
 
     class Meta:
         abstract = True
