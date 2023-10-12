@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 
 from gando.utils.uploaders.files import FileUploadTo
@@ -38,6 +39,11 @@ class FileField(BaseMultiplyField):
             field_name=name,
             sub_field_name='default_name',
             sub_filed_class=models.TextField,
+            sub_field_default_attr={
+                'verbose_name': _('Default Name'),
+                'blank': True,
+                'null': True,
+            }
         )
         self.sub_field_contribute_to_class(
             cls,
@@ -45,7 +51,10 @@ class FileField(BaseMultiplyField):
             sub_field_name='src',
             sub_filed_class=models.FileField,
             sub_field_default_attr={
-                'upload_to': FileUploadTo()
+                'verbose_name': _('SRC'),
+                'upload_to': FileUploadTo(),
+                'blank': True,
+                'null': True,
             }
         )
         setattr(cls, name, FileProperty(name))
