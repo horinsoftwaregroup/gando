@@ -43,5 +43,7 @@ setuptools.setup(
         'django-filter',
         'django-simple-history',
         'django-resized',
+        'Pillow',
+
     ],
 )
