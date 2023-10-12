@@ -10,8 +10,9 @@ from gando.utils.uploaders.files import FileUploadTo
 
 class BaseMultiplyField(models.Field):
     def __init__(self, **kwargs):
-        self.field_kwargs = kwargs.pop('field_kwargs', {})
-        super().__init__(**kwargs)
+        self.field_kwargs = kwargs
+
+        super().__init__(**{})
 
     def sub_field_contribute_to_class(
         self,
