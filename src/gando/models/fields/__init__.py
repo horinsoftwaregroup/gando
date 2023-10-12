@@ -87,7 +87,7 @@ class FileField(BaseMultiplyField):
             sub_field_name='default_name',
             sub_filed_class=models.TextField,
             sub_field_default_attr={
-                'verbose_name': _('Defaultf {name[0}.upper()N{name[0:}.lower()a me'),
+                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Default Name'),
                 'blank': True,
                 'null': True,
             }
@@ -177,7 +177,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='default_name',
             sub_filed_class=models.TextField,
             sub_field_default_attr={
-                'verbose_name': _('Defaultf {name[0}.upper()N{name[0:}.lower()a me'),
+                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Default Name'),
                 'blank': True,
                 'null': True,
             }
@@ -188,7 +188,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='alt',
             sub_filed_class=models.CharField,
             sub_field_default_attr={
-                'verbose_name': _('Alternatef {name[0}.upper()T{name[0:}.lower()i tle'),
+                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Alternate Title'),
                 'help_text': _('This title will be shown instead if the image is not loaded.'),
                 'max_length': 255,
                 'blank': True,
@@ -251,7 +251,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='customize_src',
             sub_filed_class=ResizedImageField,
             sub_field_default_attr={
-                'verbose_name': _('Customizedf {name[0}.upper()S{name[0:}.lower()R C'),
+                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Customized SRC'),
                 'upload_to': ImageUploadTo(),
                 'blank': True,
                 'null': True,
@@ -273,7 +273,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='blur_base64',
             sub_filed_class=models.TextField,
             sub_field_default_attr={
-                'verbose_name': _('Blurf-{name[0}.upper()B{name[0:}.lower()a se64'),
+                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Blur-Base64'),
                 'blank': True,
                 'null': True,
             }
