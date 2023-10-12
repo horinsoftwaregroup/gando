@@ -1,3 +1,4 @@
-from .__base import BaseMultiplyField
+from .base import BaseMultiplyField
 
-from .__file_field import FileField
+from .file_field import FileField
+from .image_field import ImageField
