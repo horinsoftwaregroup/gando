@@ -8,6 +8,16 @@ from gando.utils.uploaders.images import ImageUploadTo
 from gando.utils.uploaders.files import FileUploadTo
 
 
+class MuteTextField(models.TextField):
+    def formfield(self, **kwargs):
+        return None
+
+
+class MuteResizedImageField(ResizedImageField):
+    def formfield(self, **kwargs):
+        return None
+
+
 class BaseMultiplyField(models.Field):
     def __init__(self, **kwargs):
         self.field_kwargs = kwargs
@@ -85,7 +95,7 @@ class FileField(BaseMultiplyField):
             cls,
             field_name=name,
             sub_field_name='default_name',
-            sub_filed_class=models.TextField,
+            sub_filed_class=MuteTextField,
             sub_field_default_attr={
                 'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Default Name'),
                 'blank': True,
@@ -175,7 +185,7 @@ class ImageField(BaseMultiplyField):
             cls,
             field_name=name,
             sub_field_name='default_name',
-            sub_filed_class=models.TextField,
+            sub_filed_class=MuteTextField,
             sub_field_default_attr={
                 'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Default Name'),
                 'blank': True,
@@ -249,7 +259,7 @@ class ImageField(BaseMultiplyField):
             cls,
             field_name=name,
             sub_field_name='customize_src',
-            sub_filed_class=ResizedImageField,
+            sub_filed_class=MuteResizedImageField,
             sub_field_default_attr={
                 'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Customized SRC'),
                 'upload_to': ImageUploadTo(),
@@ -271,7 +281,7 @@ class ImageField(BaseMultiplyField):
             cls,
             field_name=name,
             sub_field_name='blur_base64',
-            sub_filed_class=models.TextField,
+            sub_filed_class=MuteTextField,
             sub_field_default_attr={
                 'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Blur-Base64'),
                 'blank': True,
