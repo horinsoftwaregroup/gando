@@ -5,17 +5,28 @@ from django.db import models
 
 from gando.utils.converters.images import small_blur_base64
 from gando.utils.uploaders.images import ImageUploadTo
-from gando.utils.uploaders.files import FileUploadTo
 
 
-class MuteTextField(models.TextField):
+class BlurBase64Field(models.TextField):
     def formfield(self, **kwargs):
         return None
 
+    def pre_save(self, model_instance, add):
+        _src = getattr(model_instance, f'{self.PARENT_FIELD_NAME}_src')
 
-class MuteResizedImageField(ResizedImageField):
+        setattr(model_instance, self.attname, small_blur_base64(_src))
+        return super().pre_save(model_instance, add)
+
+
+class CustomizeSRCImageField(ResizedImageField):
     def formfield(self, **kwargs):
         return None
+
+    def pre_save(self, model_instance, add):
+        _src = getattr(model_instance, f'{self.PARENT_FIELD_NAME}_src')
+
+        setattr(model_instance, self.attname, _src.file)
+        return super().pre_save(model_instance, add)
 
 
 class BaseMultiplyField(models.Field):
@@ -48,6 +59,8 @@ class BaseMultiplyField(models.Field):
 
         sub_field.contribute_to_class(cls, sub_field.name)
 
+        setattr(sub_field, 'PARENT_FIELD_NAME', field_name)
+
     @staticmethod
     def __get_my_kwargs(my_name, kwargs: dict, default: dict = None):
         kwargs_ = {}
@@ -63,64 +76,8 @@ class BaseMultiplyField(models.Field):
         return kwargs_
 
 
-class File:
-    def __init__(self, **kwargs):
-        self.default_name = kwargs.get('default_name')
-        self.src = kwargs.get('src')
-
-
-class FileProperty:
-    def __init__(self, name):
-        self.name = name
-
-    def __get__(self, instance, owner):
-        if not instance:
-            return self
-
-        default_name = getattr(instance, self.name + '_default_name')
-        src = getattr(instance, self.name + '_src')
-
-        ret = File(default_name=default_name, src=src)
-        return ret
-
-    def __set__(self, instance, value):
-        setattr(instance, self.name + '_default_name', value.name)
-        setattr(instance, self.name + '_src', value)
-
-
-class FileField(BaseMultiplyField):
-
-    def contribute_to_class(self, cls, name, private_only=False):
-        self.sub_field_contribute_to_class(
-            cls,
-            field_name=name,
-            sub_field_name='default_name',
-            sub_filed_class=MuteTextField,
-            sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Default Name'),
-                'blank': True,
-                'null': True,
-            }
-        )
-        self.sub_field_contribute_to_class(
-            cls,
-            field_name=name,
-            sub_field_name='src',
-            sub_filed_class=models.FileField,
-            sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} SRC'),
-                'upload_to': FileUploadTo(),
-                'blank': True,
-                'null': True,
-            }
-        )
-        setattr(cls, name, FileProperty(name))
-
-
 class Image:
     def __init__(self, **kwargs):
-        self.default_name = kwargs.get('default_name')
-
         self.alt = kwargs.get('alt')
         self.description = kwargs.get('description')
         self.width = kwargs.get('width')
@@ -139,7 +96,6 @@ class ImageProperty:
             return self
 
         ret = Image(
-            default_name=getattr(instance, self.name + '_default_name'),
             alt=getattr(instance, self.name + '_alt'),
             description=getattr(instance, self.name + '_description'),
             width=getattr(instance, self.name + '_width'),
@@ -161,8 +117,6 @@ class ImageProperty:
                 blur_base64 = small_blur_base64(src)
 
             setattr(
-                instance, self.name + '_default_name', src.name)
-            setattr(
                 instance, self.name + '_alt', value.get('alt'))
             setattr(
                 instance, self.name + '_description', value.get('description'))
@@ -181,17 +135,6 @@ class ImageProperty:
 class ImageField(BaseMultiplyField):
 
     def contribute_to_class(self, cls, name, private_only=False):
-        self.sub_field_contribute_to_class(
-            cls,
-            field_name=name,
-            sub_field_name='default_name',
-            sub_filed_class=MuteTextField,
-            sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Default Name'),
-                'blank': True,
-                'null': True,
-            }
-        )
         self.sub_field_contribute_to_class(
             cls,
             field_name=name,
@@ -259,7 +202,7 @@ class ImageField(BaseMultiplyField):
             cls,
             field_name=name,
             sub_field_name='customize_src',
-            sub_filed_class=MuteResizedImageField,
+            sub_filed_class=CustomizeSRCImageField,
             sub_field_default_attr={
                 'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Customized SRC'),
                 'upload_to': ImageUploadTo(),
@@ -281,7 +224,7 @@ class ImageField(BaseMultiplyField):
             cls,
             field_name=name,
             sub_field_name='blur_base64',
-            sub_filed_class=MuteTextField,
+            sub_filed_class=BlurBase64Field,
             sub_field_default_attr={
                 'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Blur-Base64'),
                 'blank': True,
