@@ -87,7 +87,7 @@ class FileField(BaseMultiplyField):
             sub_field_name='default_name',
             sub_filed_class=models.TextField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Default Name'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Default Name'),
                 'blank': True,
                 'null': True,
             }
@@ -98,7 +98,7 @@ class FileField(BaseMultiplyField):
             sub_field_name='src',
             sub_filed_class=models.FileField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} SRC'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} SRC'),
                 'upload_to': FileUploadTo(),
                 'blank': True,
                 'null': True,
@@ -177,7 +177,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='default_name',
             sub_filed_class=models.TextField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Default Name'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Default Name'),
                 'blank': True,
                 'null': True,
             }
@@ -188,7 +188,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='alt',
             sub_filed_class=models.CharField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Alternate Title'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Alternate Title'),
                 'help_text': _('This title will be shown instead if the image is not loaded.'),
                 'max_length': 255,
                 'blank': True,
@@ -201,7 +201,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='description',
             sub_filed_class=models.TextField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Description'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Description'),
                 'help_text': _("If you want a text to be written below the image,"
                                " write it here. Otherwise, leave it blank."),
                 'blank': True,
@@ -214,7 +214,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='width',
             sub_filed_class=models.PositiveIntegerField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Width'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Width'),
                 'blank': True,
                 'null': True,
             }
@@ -225,7 +225,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='height',
             sub_filed_class=models.PositiveIntegerField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Height'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Height'),
                 'blank': True,
                 'null': True,
             }
@@ -236,7 +236,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='src',
             sub_filed_class=models.ImageField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} SRC'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} SRC'),
                 'upload_to': ImageUploadTo(),
                 'blank': True,
                 'null': True,
@@ -251,7 +251,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='customize_src',
             sub_filed_class=ResizedImageField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Customized SRC'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Customized SRC'),
                 'upload_to': ImageUploadTo(),
                 'blank': True,
                 'null': True,
@@ -273,7 +273,7 @@ class ImageField(BaseMultiplyField):
             sub_field_name='blur_base64',
             sub_filed_class=models.TextField,
             sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[0:].lower()} Blur-Base64'),
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Blur-Base64'),
                 'blank': True,
                 'null': True,
             }
