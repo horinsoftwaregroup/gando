@@ -1,5 +1,3 @@
-from django_resized import ResizedImageField
-
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
@@ -14,18 +12,7 @@ class BlurBase64Field(models.TextField):
     def pre_save(self, model_instance, add):
         _src = getattr(model_instance, f'{self.PARENT_FIELD_NAME}_src')
 
-        setattr(model_instance, self.attname, small_blur_base64(_src))
-        return super().pre_save(model_instance, add)
-
-
-class CustomizeSRCImageField(ResizedImageField):
-    def formfield(self, **kwargs):
-        return None
-
-    def pre_save(self, model_instance, add):
-        _src = getattr(model_instance, f'{self.PARENT_FIELD_NAME}_src')
-
-        setattr(model_instance, self.attname, _src.file)
+        setattr(model_instance, self.attname, small_blur_base64(_src.file.name))
         return super().pre_save(model_instance, add)
 
 
@@ -83,7 +70,6 @@ class Image:
         self.width = kwargs.get('width')
         self.height = kwargs.get('height')
         self.src = kwargs.get('src')
-        self.customize_src = kwargs.get('customize_src')
         self.blur_base64 = kwargs.get('blur_base64')
 
 
@@ -101,35 +87,27 @@ class ImageProperty:
             width=getattr(instance, self.name + '_width'),
             height=getattr(instance, self.name + '_height'),
             src=getattr(instance, self.name + '_src'),
-            customize_src=getattr(instance, self.name + '_customize_src'),
             blur_base64=getattr(instance, self.name + '_blur_base64'),
         )
         return ret
 
     def __set__(self, instance, value: dict):
         src = value.get('src')
-        if src:
-            if src.name.split('.')[-1] == 'svg':
-                customize_src = None
-                blur_base64 = None
-            else:
-                customize_src = src.file
-                blur_base64 = small_blur_base64(src)
 
-            setattr(
-                instance, self.name + '_alt', value.get('alt'))
-            setattr(
-                instance, self.name + '_description', value.get('description'))
-            setattr(
-                instance, self.name + '_width', value.get('width'))
-            setattr(
-                instance, self.name + '_height', value.get('height'))
-            setattr(
-                instance, self.name + '_src', src)
-            setattr(
-                instance, self.name + '_customize_src', customize_src)
-            setattr(
-                instance, self.name + '_blur_base64', blur_base64)
+        blur_base64 = small_blur_base64(src) if src.name.split('.')[-1] != 'svg' else None
+
+        setattr(
+            instance, self.name + '_alt', value.get('alt'))
+        setattr(
+            instance, self.name + '_description', value.get('description'))
+        setattr(
+            instance, self.name + '_width', value.get('width'))
+        setattr(
+            instance, self.name + '_height', value.get('height'))
+        setattr(
+            instance, self.name + '_src', src)
+        setattr(
+            instance, self.name + '_blur_base64', blur_base64)
 
 
 class ImageField(BaseMultiplyField):
@@ -196,28 +174,6 @@ class ImageField(BaseMultiplyField):
 
                 'width_field': f'{name}_width',
                 'height_field': f'{name}_height',
-            }
-        )
-        self.sub_field_contribute_to_class(
-            cls,
-            field_name=name,
-            sub_field_name='customize_src',
-            sub_filed_class=CustomizeSRCImageField,
-            sub_field_default_attr={
-                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Customized SRC'),
-                'upload_to': ImageUploadTo(),
-                'blank': True,
-                'null': True,
-
-                'width_field': f'{name}_width',
-                'height_field': f'{name}_height',
-
-                'size': [100, 100],
-                'scale': 0.5,
-                'crop': None,
-                'quality': 75,
-                'keep_meta': True,
-                'force_format': 'PNG',
             }
         )
         self.sub_field_contribute_to_class(

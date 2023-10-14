@@ -42,8 +42,6 @@ setuptools.setup(
         'markdown',
         'django-filter',
         'django-simple-history',
-        'django-resized',
         'Pillow',
-
     ],
 )
