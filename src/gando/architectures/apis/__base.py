@@ -1,5 +1,6 @@
 from gando.config import SETTINGS
 
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
@@ -32,7 +33,7 @@ class BaseAPI(APIView):
             'many': self.__many(),
         }
         if self.__debug_status:
-            tmp['messages']=self.__messages()
+            tmp['messages'] = self.__messages()
             tmp['headers'] = self.get_headers()
 
         ret = tmp
@@ -133,3 +134,11 @@ class BaseAPI(APIView):
     @property
     def __debug_status(self):
         return SETTINGS.DEBUG
+
+    def response(self, output_data):
+        data = self.response_context(output_data)
+        return Response(
+            data,
+            status=self.get_status_code(),
+            headers=self.get_headers(),
+        )
