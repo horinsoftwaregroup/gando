@@ -157,5 +157,9 @@ class BaseAPI(APIView):
         return ret
 
     def convert_filename_to_url(self, file_name):
+        ret = f'{self.get_media_url()}{file_name}'
+        return ret
+
+    def convert_filename_to_url_localhost(self, file_name):
         ret = f'{self.get_host()}{self.get_media_url()}{file_name}'
         return ret
