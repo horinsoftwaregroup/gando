@@ -142,3 +142,10 @@ class BaseAPI(APIView):
             status=self.get_status_code(),
             headers=self.get_headers(),
         )
+
+    def host(self):
+        return self.request._request._current_scheme_host
+
+    def append_host_to_url(self, value):
+        ret = f'{self.host()}{value}'
+        return ret
