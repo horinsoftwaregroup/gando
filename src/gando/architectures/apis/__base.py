@@ -143,9 +143,19 @@ class BaseAPI(APIView):
             headers=self.get_headers(),
         )
 
-    def host(self):
+    def get_host(self):
         return self.request._request._current_scheme_host
 
     def append_host_to_url(self, value):
-        ret = f'{self.host()}{value}'
+        ret = f'{self.get_host()}{value}'
+        return ret
+
+    def get_media_url(self):
+        from django.conf import settings
+
+        ret = settings.MEDIA_URL
+        return ret
+
+    def convert_filename_to_url(self, file_name):
+        ret = f'{self.get_host()}{self.get_media_url()}{file_name}'
         return ret
