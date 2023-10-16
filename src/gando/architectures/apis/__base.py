@@ -22,7 +22,7 @@ class BaseAPI(APIView):
 
         self.__headers: dict = dict()
 
-    def response_context(self, data):
+    def response_context(self, data=None):
         self.__data = data
         tmp = {
             'success': self.__success(),
