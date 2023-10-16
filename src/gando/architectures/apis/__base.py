@@ -138,7 +138,7 @@ class BaseAPI(APIView):
     def __debug_status(self):
         return SETTINGS.DEBUG
 
-    def response(self, output_data):
+    def response(self, output_data=None):
         self.helper()
 
         data = self.response_context(output_data)
