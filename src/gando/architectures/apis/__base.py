@@ -136,6 +136,8 @@ class BaseAPI(APIView):
         return SETTINGS.DEBUG
 
     def response(self, output_data):
+        self.helper()
+
         data = self.response_context(output_data)
         return Response(
             data,
@@ -163,3 +165,6 @@ class BaseAPI(APIView):
     def convert_filename_to_url_localhost(self, file_name):
         ret = f'{self.get_host()}{self.get_media_url()}{file_name}'
         return ret
+
+    def helper(self):
+        pass
