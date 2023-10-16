@@ -112,7 +112,7 @@ class BaseAPI(APIView):
         data = self.__data
 
         if isinstance(data, str):
-            tmp = {'result': {'str': data}}
+            tmp = {'result': {'message': data}}
 
         elif isinstance(data, list):
             tmp = {
