@@ -111,7 +111,10 @@ class BaseAPI(APIView):
     def validate_data(self):
         data = self.__data
 
-        if isinstance(data, str):
+        if data is None:
+            tmp = {'result': {'message': self.__default_message()}}
+
+        elif isinstance(data, str):
             tmp = {'result': {'message': data}}
 
         elif isinstance(data, list):
@@ -168,3 +171,40 @@ class BaseAPI(APIView):
 
     def helper(self):
         pass
+
+    def __default_message(self):
+        status_code = self.get_status_code()
+
+        if 100 <= status_code < 200:
+            msg = 'please wait...'
+
+        elif 200 <= status_code < 300:
+            msg = 'Your request has been successfully registered.'
+
+        elif 300 <= status_code < 400:
+            msg = 'The requirements for your request are not available.'
+
+        elif 400 <= status_code < 500:
+            if status_code == 400:
+                msg = 'Bad Request...'
+
+            elif status_code == 401:
+                msg = {'result': {
+                    'message': 'Your authentication information is not available.'}}
+
+            elif status_code == 403:
+                msg = 'You do not have access to this section.'
+
+            elif status_code == 404:
+                msg = 'There is no information about your request.'
+
+            else:
+                msg = 'There was an error in how to send the request.'
+
+        elif 500 <= status_code:
+            msg = 'The server is unable to respond to your request.'
+
+        else:
+            msg = 'Undefined.'
+
+        return msg
