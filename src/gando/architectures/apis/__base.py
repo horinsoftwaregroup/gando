@@ -1,3 +1,6 @@
+from pydantic import BaseModel
+from typing import Any
+
 from gando.config import SETTINGS
 
 from rest_framework.response import Response
@@ -21,6 +24,8 @@ class BaseAPI(APIView):
         self.__status_code: int | None = None
 
         self.__headers: dict = dict()
+        self.__cookies_for_set: list = list()
+        self.__cookies_for_delete: list = list()
 
     def response_context(self, data=None):
         self.__data = data
@@ -142,11 +147,21 @@ class BaseAPI(APIView):
         self.helper()
 
         data = self.response_context(output_data)
-        return Response(
+        rsp = Response(
             data,
             status=self.get_status_code(),
             headers=self.get_headers(),
         )
+
+        if self.__cookies_for_delete:
+            for i in self.__cookies_for_delete:
+                rsp.delete_cookie(i)
+
+        if self.__cookies_for_set:
+            for i in self.__cookies_for_set:
+                rsp.set_cookie(**i)
+
+        return rsp
 
     def get_host(self):
         return self.request._request._current_scheme_host
@@ -208,3 +223,26 @@ class BaseAPI(APIView):
             msg = 'Undefined.'
 
         return msg
+
+    class Cookie(BaseModel):
+        key: str
+        value: Any = ""
+        max_age: Any = None
+        expires: Any = None
+        path: Any = "/"
+        domain: Any = None
+        secure: Any = False
+        httponly: Any = False
+        samesite: Any = None
+
+    def cookie_getter(self, key: str):
+        ret = self.request.COOKIES.get(key)
+        return ret
+
+    def cookie_setter(self, key: str, **kwargs):
+        ret = self.__cookies_for_set.append(self.Cookie(key=key, **kwargs).model_dump())
+        return ret
+
+    def cookie_deleter(self, key: str):
+        ret = self.__cookies_for_delete.append(key)
+        return ret
