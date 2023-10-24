@@ -189,3 +189,157 @@ class ImageField(BaseMultiplyField):
         )
 
         setattr(cls, name, ImageProperty(name))
+
+
+class ImageDeviceField(BaseMultiplyField):
+
+    def contribute_to_class(self, cls, name, private_only=False):
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='desktop_alt',
+            sub_filed_class=models.CharField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Desktop Alternate Title'),
+                'help_text': _('This title will be shown instead if the image is not loaded.'),
+                'max_length': 255,
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='desktop_description',
+            sub_filed_class=models.TextField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Desktop Description'),
+                'help_text': _("If you want a text to be written below the image,"
+                               " write it here. Otherwise, leave it blank."),
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='desktop_width',
+            sub_filed_class=models.PositiveIntegerField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Desktop Width'),
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='desktop_height',
+            sub_filed_class=models.PositiveIntegerField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Desktop Height'),
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='desktop_src',
+            sub_filed_class=models.ImageField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Desktop SRC'),
+                'upload_to': ImageUploadTo(),
+                'blank': True,
+                'null': True,
+
+                'width_field': f'{name}_width',
+                'height_field': f'{name}_height',
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='desktop_blur_base64',
+            sub_filed_class=BlurBase64Field,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Desktop Blur-Base64'),
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='mobile_alt',
+            sub_filed_class=models.CharField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Mobile Alternate Title'),
+                'help_text': _('This title will be shown instead if the image is not loaded.'),
+                'max_length': 255,
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='mobile_description',
+            sub_filed_class=models.TextField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Mobile Description'),
+                'help_text': _("If you want a text to be written below the image,"
+                               " write it here. Otherwise, leave it blank."),
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='mobile_width',
+            sub_filed_class=models.PositiveIntegerField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Mobile Width'),
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='mobile_height',
+            sub_filed_class=models.PositiveIntegerField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Mobile Height'),
+                'blank': True,
+                'null': True,
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='mobile_src',
+            sub_filed_class=models.ImageField,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Mobile SRC'),
+                'upload_to': ImageUploadTo(),
+                'blank': True,
+                'null': True,
+
+                'width_field': f'{name}_width',
+                'height_field': f'{name}_height',
+            }
+        )
+        self.sub_field_contribute_to_class(
+            cls,
+            field_name=name,
+            sub_field_name='mobile_blur_base64',
+            sub_filed_class=BlurBase64Field,
+            sub_field_default_attr={
+                'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Mobile Blur-Base64'),
+                'blank': True,
+                'null': True,
+            }
+        )
+        setattr(cls, name, ImageProperty(name))
