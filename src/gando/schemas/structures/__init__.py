@@ -10,10 +10,11 @@ class Widget(BaseModel):
 
 class Section(BaseModel):
     name: str
+    priority: int
     widgets: List[Widget]
 
 
 class Structure(BaseModel):
     name: str
     sections: List[Section]
-    config: dict
+    meta: dict = {}
