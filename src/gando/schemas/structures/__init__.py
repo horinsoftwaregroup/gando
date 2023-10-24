@@ -10,7 +10,6 @@ class Widget(BaseModel):
 
 class Section(BaseModel):
     name: str
-    priority: int
     widgets: List[Widget]
 
 
