@@ -253,8 +253,8 @@ class ImageDeviceField(BaseMultiplyField):
                 'blank': True,
                 'null': True,
 
-                'width_field': f'{name}_width',
-                'height_field': f'{name}_height',
+                'width_field': f'{name}_desktop_width',
+                'height_field': f'{name}_desktop_height',
             }
         )
         self.sub_field_contribute_to_class(
@@ -327,8 +327,8 @@ class ImageDeviceField(BaseMultiplyField):
                 'blank': True,
                 'null': True,
 
-                'width_field': f'{name}_width',
-                'height_field': f'{name}_height',
+                'width_field': f'{name}_mobile_width',
+                'height_field': f'{name}_mobile_height',
             }
         )
         self.sub_field_contribute_to_class(
