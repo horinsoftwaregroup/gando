@@ -262,7 +262,7 @@ class ImageDeviceField(BaseMultiplyField):
         self.sub_field_contribute_to_class(
             cls,
             field_name=desktop_name,
-            sub_field_name='desktop_blur_base64',
+            sub_field_name='blur_base64',
             sub_filed_class=BlurBase64Field,
             sub_field_default_attr={
                 'verbose_name': _(f'{desktop_name[0].upper()}{desktop_name[1:].lower()} Blur-Base64'),
@@ -341,7 +341,7 @@ class ImageDeviceField(BaseMultiplyField):
         self.sub_field_contribute_to_class(
             cls,
             field_name=mobile_name,
-            sub_field_name='mobile_blur_base64',
+            sub_field_name='blur_base64',
             sub_filed_class=BlurBase64Field,
             sub_field_default_attr={
                 'verbose_name': _(f'{mobile_name[0].upper()}{mobile_name[1:].lower()} Blur-Base64'),
