@@ -70,7 +70,7 @@ class Image:
         self.width = kwargs.get('width')
         self.height = kwargs.get('height')
         self.src = kwargs.get('src')
-        self.blur_base64 = kwargs.get('blur_base64')
+        self.blurbase64 = kwargs.get('blurbase64')
 
 
 class ImageProperty:
@@ -87,14 +87,14 @@ class ImageProperty:
             width=getattr(instance, self.name + '_width'),
             height=getattr(instance, self.name + '_height'),
             src=getattr(instance, self.name + '_src'),
-            blur_base64=getattr(instance, self.name + '_blur_base64'),
+            blurbase64=getattr(instance, self.name + '_blurbase64'),
         )
         return ret
 
     def __set__(self, instance, value: dict):
         src = value.get('src')
 
-        blur_base64 = small_blur_base64(src) if src.name.split('.')[-1] != 'svg' else None
+        blurbase64 = small_blur_base64(src) if src.name.split('.')[-1] != 'svg' else None
 
         setattr(
             instance, self.name + '_alt', value.get('alt'))
@@ -107,7 +107,7 @@ class ImageProperty:
         setattr(
             instance, self.name + '_src', src)
         setattr(
-            instance, self.name + '_blur_base64', blur_base64)
+            instance, self.name + '_blurbase64', blurbase64)
 
 
 class ImageField(BaseMultiplyField):
@@ -179,7 +179,7 @@ class ImageField(BaseMultiplyField):
         self.sub_field_contribute_to_class(
             cls,
             field_name=name,
-            sub_field_name='blur_base64',
+            sub_field_name='blurbase64',
             sub_filed_class=BlurBase64Field,
             sub_field_default_attr={
                 'verbose_name': _(f'{name[0].upper()}{name[1:].lower()} Blur-Base64'),
@@ -262,7 +262,7 @@ class ImageDeviceField(BaseMultiplyField):
         self.sub_field_contribute_to_class(
             cls,
             field_name=desktop_name,
-            sub_field_name='blur_base64',
+            sub_field_name='blurbase64',
             sub_filed_class=BlurBase64Field,
             sub_field_default_attr={
                 'verbose_name': _(f'{desktop_name[0].upper()}{desktop_name[1:].lower()} Blur-Base64'),
@@ -341,7 +341,7 @@ class ImageDeviceField(BaseMultiplyField):
         self.sub_field_contribute_to_class(
             cls,
             field_name=mobile_name,
-            sub_field_name='blur_base64',
+            sub_field_name='blurbase64',
             sub_filed_class=BlurBase64Field,
             sub_field_default_attr={
                 'verbose_name': _(f'{mobile_name[0].upper()}{mobile_name[1:].lower()} Blur-Base64'),
