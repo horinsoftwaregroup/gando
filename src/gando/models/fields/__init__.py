@@ -14,7 +14,7 @@ def verbose_name(value: str):
         else:
             tmp += ' '
             i += 1
-            tmp += value[i]
+            tmp += value[i].upper()
         i += 1
     ret = tmp
     return ret
