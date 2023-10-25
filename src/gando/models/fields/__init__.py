@@ -137,8 +137,8 @@ class ImageField(BaseMultiplyField):
                 'verbose_name': _(f'{verbose_name(name)} Alternate Title'),
                 'help_text': _('This title will be shown instead if the image is not loaded.'),
                 'max_length': 255,
-                'blank': True,
-                'null': True,
+                'blank': False,
+                'null': False,
             }
         )
         self.sub_field_contribute_to_class(
@@ -184,8 +184,8 @@ class ImageField(BaseMultiplyField):
             sub_field_default_attr={
                 'verbose_name': _(f'{verbose_name(name)} SRC'),
                 'upload_to': ImageUploadTo(),
-                'blank': True,
-                'null': True,
+                'blank': False,
+                'null': False,
 
                 'width_field': f'{name}_width',
                 'height_field': f'{name}_height',
@@ -220,8 +220,8 @@ class ImageDeviceField(BaseMultiplyField):
                 'verbose_name': _(f'{verbose_name(desktop_name)} Alternate Title'),
                 'help_text': _('This title will be shown instead if the image is not loaded.'),
                 'max_length': 255,
-                'blank': True,
-                'null': True,
+                'blank': False,
+                'null': False,
             }
         )
         self.sub_field_contribute_to_class(
@@ -267,8 +267,8 @@ class ImageDeviceField(BaseMultiplyField):
             sub_field_default_attr={
                 'verbose_name': _(f'{verbose_name(desktop_name)} SRC'),
                 'upload_to': ImageUploadTo(),
-                'blank': True,
-                'null': True,
+                'blank': False,
+                'null': False,
 
                 'width_field': f'{desktop_name}_width',
                 'height_field': f'{desktop_name}_height',
@@ -299,8 +299,8 @@ class ImageDeviceField(BaseMultiplyField):
                 'verbose_name': _(f'{verbose_name(mobile_name)} Alternate Title'),
                 'help_text': _('This title will be shown instead if the image is not loaded.'),
                 'max_length': 255,
-                'blank': True,
-                'null': True,
+                'blank': False,
+                'null': False,
             }
         )
         self.sub_field_contribute_to_class(
@@ -346,8 +346,8 @@ class ImageDeviceField(BaseMultiplyField):
             sub_field_default_attr={
                 'verbose_name': _(f'{verbose_name(mobile_name)} SRC'),
                 'upload_to': ImageUploadTo(),
-                'blank': True,
-                'null': True,
+                'blank': False,
+                'null': False,
 
                 'width_field': f'{mobile_name}_width',
                 'height_field': f'{mobile_name}_height',
