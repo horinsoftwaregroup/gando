@@ -6,10 +6,13 @@ from django.db import models
 
 
 class AbstractBaseModel(models.Model):
-    uid = models.UUIDField(
-        verbose_name=_('UID'),
-        unique=True,
+    id = models.UUIDField(
+        verbose_name=_('ID'),
+        primary_key=True,
         default=uuid.uuid4,
+        blank=False,
+        null=False,
+        unique=True,
         editable=False,
         db_index=True,
     )
