@@ -1,13 +1,15 @@
 from pydantic import BaseModel
 from typing import List
 
+from uuid import UUID
 
-class Object(BaseModel):
-    id: str
+
+class ObjectSchema(BaseModel):
+    id: UUID
     service_name: str
     app_name: str
     table_name: str
 
 
-class Relations(BaseModel):
-    objs: List[Object]
+class RelationsSchema(BaseModel):
+    objs: List[ObjectSchema]
