@@ -65,7 +65,6 @@ class AbstractBaseModelAdmin(admin.ModelAdmin):
                 f'{i}_description',
                 f'{i}_blurbase64',
             ]
-            self._readonly_fields += [f'{i}_blurbase64'] if f'{i}_blurbase64' not in self._readonly_fields else []
 
         ret = [('Images', {'fields': tmp})] if tmp else []
         return ret
