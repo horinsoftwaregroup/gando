@@ -17,6 +17,16 @@ def verbose_name(value: str):
 
 
 class BaseModelAdmin(admin.ModelAdmin):
+
+    def __init__(self, *args, **kwargs):
+        self.list_display = [] if not self.list_display else self.list_display
+        self.list_display_links = [] if not self.list_display_links else self.list_display_links
+        self.list_filter = [] if not self.list_filter else self.list_filter
+        self.search_fields = [] if not self.search_fields else self.search_fields
+        self.readonly_fields = [] if not self.readonly_fields else self.readonly_fields
+
+        super().__init__(*args, **kwargs)
+
     _list_display = []
 
     @property
@@ -87,9 +97,6 @@ class BaseModelAdmin(admin.ModelAdmin):
 
         self._fieldsets = tmp
 
-        _readonly_fields = ['id', 'created_dt', 'updated_dt'] + self.__get_image_read_only_fields()
-        self._readonly_fields = _readonly_fields if not self._readonly_fields else self._readonly_fields
-
     _readonly_fields = []
 
     @property
@@ -102,6 +109,7 @@ class BaseModelAdmin(admin.ModelAdmin):
 
         tmp = ['id'] if 'id' not in value else []
         tmp += value
+        tmp += self.__get_image_read_only_fields()
         tmp += ['created_dt'] if 'created_dt' not in value else []
         tmp += ['updated_dt'] if 'updated_dt' not in value else []
 
