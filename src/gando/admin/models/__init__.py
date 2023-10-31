@@ -88,8 +88,8 @@ class AbstractBaseModelAdmin(admin.ModelAdmin):
 
         self._fieldsets = tmp
 
-        self._readonly_fields = ['id', 'created_dt', 'updated_dt'] + self.__get_image_read_only_fields(
-        ) if not self._readonly_fields else self._readonly_fields
+        _readonly_fields = ['id', 'created_dt', 'updated_dt'] + self.__get_image_read_only_fields()
+        self._readonly_fields = _readonly_fields if not self._readonly_fields else self._readonly_fields
 
     _readonly_fields = []
 
