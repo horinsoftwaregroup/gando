@@ -70,7 +70,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         for i in self.image_fields_name_list:
             tmp += [
                 (f'{i}_category', f'{i}_device_type',),
-                (f'{i}_width', f'{i}_height',),
+                (f'{i}_`width`', f'{i}_`height`',),
                 (f'{i}_alt', f'{i}_src',),
                 f'{i}_description',
                 f'{i}_blurbase64',
@@ -80,7 +80,12 @@ class BaseModelAdmin(admin.ModelAdmin):
         return ret
 
     def __get_image_read_only_fields(self):
-        return [f'{i}_blurbase64' for i in self.image_fields_name_list]
+        ret = []
+        for i in self.image_fields_name_list:
+            ret.append(f'{i}_blurbase64')
+            ret.append(f'{i}_width')
+            ret.append(f'{i}_height')
+        return ret
 
     _fieldsets = []
 
