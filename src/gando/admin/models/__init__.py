@@ -70,7 +70,7 @@ class AbstractBaseModelAdmin(admin.ModelAdmin):
         return ret
 
     def __get_image_read_only_fields(self):
-        return [[f'{i}_blurbase64'] for i in self.image_fields_name_list]
+        return [f'{i}_blurbase64' for i in self.image_fields_name_list]
 
     _fieldsets = []
 
