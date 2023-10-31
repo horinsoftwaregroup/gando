@@ -83,6 +83,8 @@ class BaseMultiplyField(models.Field):
 
 class Image:
     def __init__(self, **kwargs):
+        self.category = kwargs.get('category')
+        self.device_type = kwargs.get('device_type')
         self.alt = kwargs.get('alt')
         self.description = kwargs.get('description')
         self.width = kwargs.get('width')
@@ -100,6 +102,8 @@ class ImageProperty:
             return self
 
         ret = Image(
+            category=getattr(instance, self.name + '_category'),
+            device_type=getattr(instance, self.name + '_device_type'),
             alt=getattr(instance, self.name + '_alt'),
             description=getattr(instance, self.name + '_description'),
             width=getattr(instance, self.name + '_width'),
@@ -114,6 +118,10 @@ class ImageProperty:
 
         blurbase64 = (small_blur_base64(src) if src.name.split('.')[-1] != 'svg' else None) if src else None
 
+        setattr(
+            instance, self.name + '_category', value.get('category'))
+        setattr(
+            instance, self.name + '_device_type', value.get('device_type'))
         setattr(
             instance, self.name + '_alt', value.get('alt'))
         setattr(
