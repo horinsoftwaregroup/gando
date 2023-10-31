@@ -57,7 +57,6 @@ class AbstractBaseModelAdmin(admin.ModelAdmin):
 
     def __set_image_fieldsets(self):
         tmp = []
-
         for i in self.image_fields_name_list:
             tmp += [
                 (f'{i}_category', f'{i}_device_type',),
@@ -66,6 +65,7 @@ class AbstractBaseModelAdmin(admin.ModelAdmin):
                 f'{i}_description',
                 f'{i}_blurbase64',
             ]
+            self._readonly_fields += [f'{i}_blurbase64'] if f'{i}_blurbase64' not in self._readonly_fields else []
 
         ret = [('Images', {'fields': tmp})] if tmp else []
         return ret
