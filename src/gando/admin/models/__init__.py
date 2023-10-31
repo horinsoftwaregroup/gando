@@ -70,6 +70,9 @@ class AbstractBaseModelAdmin(admin.ModelAdmin):
         ret = [('Images', {'fields': tmp})] if tmp else []
         return ret
 
+    def __get_image_read_only_fields(self):
+        return [[f'{i}_blurbase64'] for i in self.image_fields_name_list]
+
     _fieldsets = []
 
     @property
@@ -85,8 +88,8 @@ class AbstractBaseModelAdmin(admin.ModelAdmin):
 
         self._fieldsets = tmp
 
-        self._readonly_fields = [
-            'id', 'created_dt', 'updated_dt'] if not self._readonly_fields else self._readonly_fields
+        self._readonly_fields = ['id', 'created_dt', 'updated_dt'] + self.__get_image_read_only_fields(
+        ) if not self._readonly_fields else self._readonly_fields
 
     _readonly_fields = []
 
