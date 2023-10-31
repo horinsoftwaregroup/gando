@@ -70,8 +70,8 @@ class BaseModelAdmin(admin.ModelAdmin):
         for i in self.image_fields_name_list:
             tmp += [
                 (f'{i}_category', f'{i}_device_type',),
-                (f'{i}_`width`', f'{i}_`height`',),
                 (f'{i}_alt', f'{i}_src',),
+                (f'{i}_width', f'{i}_height',),
                 f'{i}_description',
                 f'{i}_blurbase64',
             ]
