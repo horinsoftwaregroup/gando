@@ -16,7 +16,7 @@ def verbose_name(value: str):
     return ret
 
 
-class AbstractBaseModelAdmin(admin.ModelAdmin):
+class BaseModelAdmin(admin.ModelAdmin):
     _list_display = []
 
     @property
