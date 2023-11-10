@@ -49,7 +49,7 @@ class BaseAPI(APIView):
             headers = self.get_headers(tmp)
 
             tmp = response.exception if hasattr(response, 'exception') else None
-            exception = tmp
+            exception = self.get_exception_status(tmp)
 
             tmp = response.content_type if hasattr(response, 'content_type') else None
             content_type = self.get_content_type(tmp)
