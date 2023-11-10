@@ -27,6 +27,39 @@ class BaseAPI(APIView):
         self.__cookies_for_set: list = list()
         self.__cookies_for_delete: list = list()
 
+    def finalize_response(self, request, response, *args, **kwargs):
+        if isinstance(response, Response):
+            self.helper()
+
+            data = self.response_context(
+                response.data if hasattr(response, 'data') else None)
+            status_code = self.get_status_code(
+                response.status_code if hasattr(response, 'status_code') else None)
+            template_name = response.template_name if hasattr(response, 'template_name') else None
+            headers = self.get_headers(
+                response.headers if hasattr(response, 'headers') else None)
+            exception = response.exception if hasattr(response, 'exception') else None
+            content_type = response.content_type if hasattr(response, 'content_type') else None
+
+            rsp = Response(
+                data=data,
+                status=status_code,
+                template_name=template_name,
+                headers=headers,
+                exception=exception,
+                content_type=content_type,
+            )
+
+            if self.__cookies_for_delete:
+                for i in self.__cookies_for_delete:
+                    rsp.delete_cookie(i)
+
+            if self.__cookies_for_set:
+                for i in self.__cookies_for_set:
+                    rsp.set_cookie(**i)
+
+        return super().finalize_response(request, response, *args, **kwargs)
+
     def response_context(self, data=None):
         self.__data = data
         tmp = {
@@ -67,7 +100,10 @@ class BaseAPI(APIView):
     def set_headers(self, key, value):
         self.__headers[key] = value
 
-    def get_headers(self):
+    def get_headers(self, value: dict = None):
+        if value:
+            for k, v in value.items():
+                self.set_headers(k, v)
         return self.__headers
 
     def __messages(self, ) -> dict:
@@ -102,7 +138,10 @@ class BaseAPI(APIView):
     def set_status_code(self, value: int):
         self.__status_code = value
 
-    def get_status_code(self):
+    def get_status_code(self, value: int = None):
+        if value and 100 <= value < 600 and value != 200:
+            self.set_status_code(value)
+
         return self.__status_code or 200
 
     def set_monitor(self, key, value):
