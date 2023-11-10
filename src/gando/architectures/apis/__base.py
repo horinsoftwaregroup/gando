@@ -35,7 +35,7 @@ class BaseAPI(APIView):
         self.__cookies_for_set: list = list()
         self.__cookies_for_delete: list = list()
 
-        self.__content_type: str = ''
+        self.__content_type: str = 'application/json'
         self.__exception_status: bool = False
 
     def finalize_response(self, request, response, *args, **kwargs):
@@ -202,7 +202,7 @@ class BaseAPI(APIView):
         if value:
             self.set_content_type(value)
 
-        return self.__content_type or ''
+        return self.__content_type or 'application/json'
 
     def set_exception_status(self, value: bool):
         self.__exception_status = value
@@ -230,7 +230,7 @@ class BaseAPI(APIView):
 
         elif isinstance(data, str) or issubclass(type(data), str):
             data = self.__set_dynamic_message(data)
-            tmp = {'result': data}
+            tmp = {'result': {'string': data} if data else {}}
 
         elif isinstance(data, list):
             tmp = {
@@ -356,14 +356,8 @@ class BaseAPI(APIView):
             self.set_error_message('status_code_xxx', self.__default_message())
 
     def __set_messages_from_data(self, data):
-        if isinstance(data, str):
-            return data
-
-        if issubclass(type(data), str):
-            rslt = self.__set_dynamic_message(data)
-            if rslt:
-                return rslt
-            return None
+        if isinstance(data, str) or issubclass(type(data), str):
+            return self.__set_dynamic_message(data)
 
         if isinstance(data, list):
             tmp = []
@@ -388,24 +382,21 @@ class BaseAPI(APIView):
         return data
 
     def __set_dynamic_message(self, value):
-        if isinstance(value, str):
-            return {'string': value}
-
         if isinstance(value, InfoStringMessage):
             self.set_info_message(key=value.code, value=value)
-            return {}
+            return None
         if isinstance(value, ErrorStringMessage) or isinstance(value, ErrorDetail):
             self.set_error_message(key=value.code, value=value)
-            return {}
+            return None
         if isinstance(value, WarningStringMessage):
             self.set_warning_message(key=value.code, value=value)
-            return {}
+            return None
         if isinstance(value, LogStringMessage):
             self.set_log_message(key=value.code, value=value)
-            return {}
+            return None
         if isinstance(value, ExceptionStringMessage):
             self.set_exception_message(key=value.code, value=value)
-            return {}
+            return None
 
         return value
 
