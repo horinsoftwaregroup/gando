@@ -228,7 +228,7 @@ class BaseAPI(APIView):
             self.__set_default_message()
             tmp = {'result': {}}
 
-        elif isinstance(data, str) or issubclass(data, str):
+        elif isinstance(data, str) or issubclass(type(data), str):
             data = self.__set_dynamic_message(data)
             tmp = {'result': data}
 
@@ -359,7 +359,7 @@ class BaseAPI(APIView):
         if isinstance(data, str):
             return data
 
-        if issubclass(data, str):
+        if issubclass(type(data), str):
             rslt = self.__set_dynamic_message(data)
             if rslt:
                 return rslt
