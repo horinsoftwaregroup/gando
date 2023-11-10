@@ -64,6 +64,8 @@ class BaseAPI(APIView):
 
     def response_context(self, data=None):
         self.__data = data
+        self.__set_error_message_from_data(data)
+
         tmp = {
             'success': self.__success(),
             'status_code': self.get_status_code(),
@@ -113,7 +115,7 @@ class BaseAPI(APIView):
         if not isinstance(data, dict):
             return
 
-        for k, v in data:
+        for k, v in data.items():
             if isinstance(v, ErrorDetail):
                 self.set_error_message(v.code, v)
 
@@ -165,7 +167,6 @@ class BaseAPI(APIView):
 
     def validate_data(self):
         data = self.__data
-        self.__set_error_message_from_data(data)
 
         if data is None:
             tmp = {'result': {'message': self.__default_message()}}
