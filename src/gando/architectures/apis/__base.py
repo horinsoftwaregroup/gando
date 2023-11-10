@@ -254,22 +254,12 @@ class BaseAPI(APIView):
         return SETTINGS.DEBUG
 
     def response(self, output_data=None):
-        self.helper()
-
-        data = self.response_context(output_data)
+        data = output_data
         rsp = Response(
             data,
             status=self.get_status_code(),
             headers=self.get_headers(),
         )
-
-        if self.__cookies_for_delete:
-            for i in self.__cookies_for_delete:
-                rsp.delete_cookie(i)
-
-        if self.__cookies_for_set:
-            for i in self.__cookies_for_set:
-                rsp.set_cookie(**i)
 
         return rsp
 
