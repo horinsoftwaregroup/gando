@@ -33,15 +33,23 @@ class BaseAPI(APIView):
         if isinstance(response, Response):
             self.helper()
 
-            data = self.response_context(
-                response.data if hasattr(response, 'data') else None)
-            status_code = self.get_status_code(
-                response.status_code if hasattr(response, 'status_code') else None)
-            template_name = response.template_name if hasattr(response, 'template_name') else None
-            headers = self.get_headers(
-                response.headers if hasattr(response, 'headers') else None)
-            exception = response.exception if hasattr(response, 'exception') else None
-            content_type = response.content_type if hasattr(response, 'content_type') else None
+            tmp = response.data if hasattr(response, 'data') else None
+            data = self.response_context(tmp)
+
+            tmp = response.status_code if hasattr(response, 'status_code') else None
+            status_code = self.get_status_code(tmp)
+
+            tmp = response.template_name if hasattr(response, 'template_name') else None
+            template_name = tmp
+
+            tmp = response.headers if hasattr(response, 'headers') else None
+            headers = self.get_headers(tmp)
+
+            tmp = response.exception if hasattr(response, 'exception') else None
+            exception = tmp
+
+            tmp = response.content_type if hasattr(response, 'content_type') else None
+            content_type = tmp
 
             response = Response(
                 data=data,
@@ -63,16 +71,24 @@ class BaseAPI(APIView):
         return super().finalize_response(request, response, *args, **kwargs)
 
     def response_context(self, data=None):
-        self.__data = data
-        self.__set_error_message_from_data(data)
+        self.__data = self.__set_error_message_from_data(data)
+
+        status_code = self.get_status_code()
+        data = self.validate_data()
+        many = self.__many()
+
+        monitor = self.__monitor
+
+        has_warning = self.__has_warning()
+        success = self.__success()
 
         tmp = {
-            'success': self.__success(),
-            'status_code': self.get_status_code(),
-            'has_warning': self.__has_warning(),
-            'monitor': self.__monitor,
-            'data': self.validate_data(),
-            'many': self.__many(),
+            'success': success,
+            'status_code': status_code,
+            'has_warning': has_warning,
+            'monitor': monitor,
+            'data': data,
+            'many': many,
         }
         if self.__debug_status:
             tmp['messages'] = self.__messages()
@@ -113,11 +129,18 @@ class BaseAPI(APIView):
     def __set_error_message_from_data(self, data: dict):
 
         if not isinstance(data, dict):
-            return
+            return data
 
+        tmp = {}
         for k, v in data.items():
             if isinstance(v, ErrorDetail):
-                self.set_error_message(v.code, v)
+                if v.code != v:
+                    self.set_error_message(v.code, v)
+            else:
+                tmp[k] = v
+
+        ret = tmp
+        return ret
 
     def __messages(self, ) -> dict:
         tmp = {
