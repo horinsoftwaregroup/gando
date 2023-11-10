@@ -35,7 +35,7 @@ class BaseAPI(APIView):
         self.__cookies_for_set: list = list()
         self.__cookies_for_delete: list = list()
 
-        self.__content_type: str = 'application/json'
+        self.__content_type: str | None = None
         self.__exception_status: bool = False
 
     def finalize_response(self, request, response, *args, **kwargs):
@@ -52,7 +52,7 @@ class BaseAPI(APIView):
             exception = self.get_exception_status(tmp)
 
             tmp = response.content_type if hasattr(response, 'content_type') else None
-            content_type = self.get_content_type(tmp)
+            content_type = tmp
 
             tmp = response.status_code if hasattr(response, 'status_code') else None
             status_code = self.get_status_code(tmp)
@@ -106,7 +106,7 @@ class BaseAPI(APIView):
             'has_warning': has_warning,
             'exception_status': exception_status,
 
-            'content_type': content_type,
+            # 'content_type': content_type,
 
             'messages': messages,
 
@@ -202,7 +202,7 @@ class BaseAPI(APIView):
         if value:
             self.set_content_type(value)
 
-        return self.__content_type or 'application/json'
+        return self.__content_type
 
     def set_exception_status(self, value: bool):
         self.__exception_status = value
