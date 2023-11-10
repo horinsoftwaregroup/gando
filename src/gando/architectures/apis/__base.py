@@ -1,10 +1,16 @@
 from pydantic import BaseModel
 from typing import Any
 
-from rest_framework.exceptions import ErrorDetail
-
+from gando.http.responses.string_messages import (
+    InfoStringMessage,
+    ErrorStringMessage,
+    WarningStringMessage,
+    LogStringMessage,
+    ExceptionStringMessage,
+)
 from gando.config import SETTINGS
 
+from rest_framework.exceptions import ErrorDetail
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -29,15 +35,12 @@ class BaseAPI(APIView):
         self.__cookies_for_set: list = list()
         self.__cookies_for_delete: list = list()
 
+        self.__content_type: str = ''
+        self.__exception_status: bool = False
+
     def finalize_response(self, request, response, *args, **kwargs):
         if isinstance(response, Response):
             self.helper()
-
-            tmp = response.data if hasattr(response, 'data') else None
-            data = self.response_context(tmp)
-
-            tmp = response.status_code if hasattr(response, 'status_code') else None
-            status_code = self.get_status_code(tmp)
 
             tmp = response.template_name if hasattr(response, 'template_name') else None
             template_name = tmp
@@ -49,7 +52,13 @@ class BaseAPI(APIView):
             exception = tmp
 
             tmp = response.content_type if hasattr(response, 'content_type') else None
-            content_type = tmp
+            content_type = self.get_content_type(tmp)
+
+            tmp = response.status_code if hasattr(response, 'status_code') else None
+            status_code = self.get_status_code(tmp)
+
+            tmp = response.data if hasattr(response, 'data') else None
+            data = self.response_context(tmp)
 
             response = Response(
                 data=data,
@@ -71,28 +80,42 @@ class BaseAPI(APIView):
         return super().finalize_response(request, response, *args, **kwargs)
 
     def response_context(self, data=None):
-        self.__data = self.__set_error_message_from_data(data)
+        self.__data = self.__set_messages_from_data(data)
 
         status_code = self.get_status_code()
+        content_type = self.get_content_type()
         data = self.validate_data()
         many = self.__many()
 
         monitor = self.__monitor
 
         has_warning = self.__has_warning()
+        exception_status = self.get_exception_status()
+
+        messages = self.__messages()
+
         success = self.__success()
+
+        headers = self.get_headers()
 
         tmp = {
             'success': success,
+
             'status_code': status_code,
+
             'has_warning': has_warning,
+            'exception_status': exception_status,
+
+            'content_type': content_type,
+
+            'messages': messages,
+
             'monitor': monitor,
-            'data': data,
             'many': many,
+            'data': data,
         }
         if self.__debug_status:
-            tmp['messages'] = self.__messages()
-            tmp['headers'] = self.get_headers()
+            tmp['headers'] = headers
 
         ret = tmp
         return ret
@@ -126,22 +149,6 @@ class BaseAPI(APIView):
                 self.set_headers(k, v)
         return self.__headers
 
-    def __set_error_message_from_data(self, data: dict):
-
-        if not isinstance(data, dict):
-            return data
-
-        tmp = {}
-        for k, v in data.items():
-            if isinstance(v, ErrorDetail):
-                if v.code != v:
-                    self.set_error_message(v.code, v)
-            else:
-                tmp[k] = v
-
-        ret = tmp
-        return ret
-
     def __messages(self, ) -> dict:
         tmp = {
             'info': self.__infos_message,
@@ -159,10 +166,18 @@ class BaseAPI(APIView):
     def __many(self):
         if isinstance(self.__data, list):
             return True
+        if (
+            isinstance(self.__data, dict) and
+            'count' in self.__data and
+            'next' in self.__data and
+            'previous' in self.__data and
+            'results' in self.__data
+        ):
+            return True
         return False
 
     def __success(self):
-        if len(self.__errors_message) == 0 and len(self.__exceptions_message) == 0:
+        if len(self.__errors_message) == 0 and len(self.__exceptions_message) == 0 and not self.__exception_status:
             return True
         return False
 
@@ -180,6 +195,24 @@ class BaseAPI(APIView):
 
         return self.__status_code or 200
 
+    def set_content_type(self, value: str):
+        self.__content_type = value
+
+    def get_content_type(self, value: str = None):
+        if value:
+            self.set_content_type(value)
+
+        return self.__content_type or ''
+
+    def set_exception_status(self, value: bool):
+        self.__exception_status = value
+
+    def get_exception_status(self, value: bool = None):
+        if value is not None:
+            self.set_exception_status(value)
+
+        return self.__exception_status
+
     def set_monitor(self, key, value):
         if key in self.__allowed_monitor_keys:
             self.__monitor[key] = value
@@ -192,10 +225,12 @@ class BaseAPI(APIView):
         data = self.__data
 
         if data is None:
-            tmp = {'result': {'message': self.__default_message()}}
+            self.__set_default_message()
+            tmp = {'result': {}}
 
-        elif isinstance(data, str):
-            tmp = {'result': {'message': data}}
+        elif isinstance(data, str) or issubclass(data, str):
+            data = self.__set_dynamic_message(data)
+            tmp = {'result': data}
 
         elif isinstance(data, list):
             tmp = {
@@ -298,6 +333,81 @@ class BaseAPI(APIView):
             msg = 'Undefined.'
 
         return msg
+
+    def __set_default_message(self):
+        status_code = self.get_status_code()
+
+        if 100 <= status_code < 200:
+            self.set_warning_message('status_code_1xx', self.__default_message())
+
+        elif 200 <= status_code < 300:
+            self.set_info_message('status_code_2xx', self.__default_message())
+
+        elif 300 <= status_code < 400:
+            self.set_error_message('status_code_3xx', self.__default_message())
+
+        elif 400 <= status_code < 500:
+            self.set_error_message('status_code_4xx', self.__default_message())
+
+        elif 500 <= status_code:
+            self.set_error_message('status_code_5xx', self.__default_message())
+
+        else:
+            self.set_error_message('status_code_xxx', self.__default_message())
+
+    def __set_messages_from_data(self, data):
+        if isinstance(data, str):
+            return data
+
+        if issubclass(data, str):
+            rslt = self.__set_dynamic_message(data)
+            if rslt:
+                return rslt
+            return None
+
+        if isinstance(data, list):
+            tmp = []
+            for i in data:
+                rslt = self.__set_messages_from_data(i)
+                if rslt:
+                    tmp.append(rslt)
+
+            ret = tmp
+            return ret
+
+        if isinstance(data, dict):
+            tmp = {}
+            for k, v in data.items():
+                rslt = self.__set_messages_from_data(v)
+                if rslt:
+                    tmp[k] = v
+
+            ret = tmp
+            return ret
+
+        return data
+
+    def __set_dynamic_message(self, value):
+        if isinstance(value, str):
+            return {'string': value}
+
+        if isinstance(value, InfoStringMessage):
+            self.set_info_message(key=value.code, value=value)
+            return {}
+        if isinstance(value, ErrorStringMessage) or isinstance(value, ErrorDetail):
+            self.set_error_message(key=value.code, value=value)
+            return {}
+        if isinstance(value, WarningStringMessage):
+            self.set_warning_message(key=value.code, value=value)
+            return {}
+        if isinstance(value, LogStringMessage):
+            self.set_log_message(key=value.code, value=value)
+            return {}
+        if isinstance(value, ExceptionStringMessage):
+            self.set_exception_message(key=value.code, value=value)
+            return {}
+
+        return value
 
     class Cookie(BaseModel):
         key: str
