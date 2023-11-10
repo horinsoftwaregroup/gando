@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from typing import Any
 
+from rest_framework.exceptions import ErrorDetail
+
 from gando.config import SETTINGS
 
 from rest_framework.response import Response
@@ -41,7 +43,7 @@ class BaseAPI(APIView):
             exception = response.exception if hasattr(response, 'exception') else None
             content_type = response.content_type if hasattr(response, 'content_type') else None
 
-            rsp = Response(
+            response = Response(
                 data=data,
                 status=status_code,
                 template_name=template_name,
@@ -52,11 +54,11 @@ class BaseAPI(APIView):
 
             if self.__cookies_for_delete:
                 for i in self.__cookies_for_delete:
-                    rsp.delete_cookie(i)
+                    response.delete_cookie(i)
 
             if self.__cookies_for_set:
                 for i in self.__cookies_for_set:
-                    rsp.set_cookie(**i)
+                    response.set_cookie(**i)
 
         return super().finalize_response(request, response, *args, **kwargs)
 
@@ -106,6 +108,15 @@ class BaseAPI(APIView):
                 self.set_headers(k, v)
         return self.__headers
 
+    def __set_error_message_from_data(self, data: dict):
+
+        if not isinstance(data, dict):
+            return
+
+        for k, v in data:
+            if isinstance(v, ErrorDetail):
+                self.set_error_message(v.code, v)
+
     def __messages(self, ) -> dict:
         tmp = {
             'info': self.__infos_message,
@@ -154,6 +165,7 @@ class BaseAPI(APIView):
 
     def validate_data(self):
         data = self.__data
+        self.__set_error_message_from_data(data)
 
         if data is None:
             tmp = {'result': {'message': self.__default_message()}}
