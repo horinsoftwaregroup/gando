@@ -36,14 +36,14 @@ class Image:
         return f'data:{mimetype};base64,{encoded_image}'
 
     def __proportion(self) -> int:
-        image_p = round(self.height / self.width, 10)
+        image_p = round(self.height / self.width, 15)
 
-        b__p_9_16__p_2_3 = round(abs(9 / 16 - 2 / 3) / 2)
-        b__p_2_3__p_4_5 = round(abs(2 / 3 - 4 / 5) / 2)
-        b__p_4_5__p_1_1 = round(abs(4 / 5 - 1 / 1) / 2)
-        b__p_1_1__p_5_4 = round(abs(1 / 1 - 5 / 4) / 2)
-        b__p_5_4__p_3_2 = round(abs(5 / 4 - 3 / 2) / 2)
-        b__p_3_2__p_16_9 = round(abs(3 / 2 - 16 / 9) / 2)
+        b__p_9_16__p_2_3 = round(abs(9 / 16 - 2 / 3) / 2, 15)
+        b__p_2_3__p_4_5 = round(abs(2 / 3 - 4 / 5) / 2, 15)
+        b__p_4_5__p_1_1 = round(abs(4 / 5 - 1 / 1) / 2, 15)
+        b__p_1_1__p_5_4 = round(abs(1 / 1 - 5 / 4) / 2, 15)
+        b__p_5_4__p_3_2 = round(abs(5 / 4 - 3 / 2) / 2, 15)
+        b__p_3_2__p_16_9 = round(abs(3 / 2 - 16 / 9) / 2, 15)
 
         if image_p <= b__p_9_16__p_2_3:
             return 916
