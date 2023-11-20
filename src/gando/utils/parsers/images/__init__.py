@@ -4,8 +4,8 @@ import io
 
 
 class Image:
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, src):
+        self.__src = src
 
         self.width = self.__open_image().width
         self.height = self.__open_image().height
@@ -20,7 +20,7 @@ class Image:
 
     def __open_image(self):
         if not self.__open_image_:
-            self.__open_image_ = ImagePIL.open(self.path)
+            self.__open_image_ = ImagePIL.open(self.__src)
         return self.__open_image_
 
     def __b64(self):
