@@ -12,7 +12,7 @@ class Image:
 
         self.proportion = self.__proportion()
 
-        self.file_format = self.__open_image().format
+        self.file_format = self.__open_image().format.lower()
 
         self.b64 = self.__b64()
 
