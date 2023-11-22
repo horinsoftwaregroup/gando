@@ -10,7 +10,7 @@ class Image:
         self.width = self.__open_image().width
         self.height = self.__open_image().height
 
-        self.size = self.__open_image().size
+        self.size = self.__src.size
 
         self.proportion = self.__proportion()
 
