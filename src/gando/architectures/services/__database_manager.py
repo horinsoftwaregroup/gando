@@ -1,9 +1,7 @@
+from gando.architectures.services import BaseService
+from django.db.models import Model
 from abc import abstractmethod
 from pydantic import BaseModel
-
-from django.db.models import Model
-
-from gando.architectures.services import BaseService
 
 
 class BaseDataBaseManagerService(BaseService):
