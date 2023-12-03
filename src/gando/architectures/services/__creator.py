@@ -1,5 +1,3 @@
-from abc import abstractmethod
-
 from gando.architectures.services import BaseDataBaseManagerService
 
 
@@ -10,14 +8,15 @@ class BaseCreatorService(BaseDataBaseManagerService):
         self.valid_input_data = self.__validate(**kwargs)
 
     @property
-    @abstractmethod
-    def valid_key_input_data_list(self) -> list:
-        pass
+    def valid_key_input_data(self) -> list:
+        if not hasattr(self, 'valid_key_input_data_list'):
+            raise Exception('valid_key_input_data_list not define.')
+        return self.valid_key_input_data_list
 
     def __validate(self, **kwargs):
         tmp = {}
         for k, v in kwargs.items():
-            if k in self.valid_key_input_data_list:
+            if k in self.valid_key_input_data:
                 tmp[k] = v
         ret = tmp
         return ret

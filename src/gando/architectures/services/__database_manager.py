@@ -11,14 +11,16 @@ class BaseDataBaseManagerService(BaseService):
         super().__init__(*args, **kwargs)
 
     @property
-    @abstractmethod
     def model(self) -> Model:
-        pass
+        if not hasattr(self, 'model_class'):
+            raise Exception('model_class not define.')
+        return self.model_class
 
     @property
-    @abstractmethod
     def output_schema(self) -> BaseModel:
-        pass
+        if not hasattr(self, 'output_schema_class'):
+            raise Exception('output_schema_class not define.')
+        return self.output_schema_class
 
     def __convert_to_schema(self, obj):
         ret = self.output_schema(**obj) if obj else None
