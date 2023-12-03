@@ -342,3 +342,21 @@ class PasswordField(models.CharField):
             'db_index', True, )
 
         super().__init__(*args, **kwargs)
+
+
+class BooleanNumberField(models.IntegerField):
+    description = _('Boolean Number')
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault(
+            'default', 0, )
+        kwargs.setdefault(
+            'choices', ((0, 'No',), (1, 'Yes',),), )
+        kwargs.setdefault(
+            'blank', False, )
+        kwargs.setdefault(
+            'null', False, )
+        kwargs.setdefault(
+            'db_index', True, )
+
+        super().__init__(*args, **kwargs)
