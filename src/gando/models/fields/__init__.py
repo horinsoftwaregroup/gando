@@ -1,4 +1,8 @@
+import re
+
 from django.utils.translation import gettext_lazy as _
+from django.utils.deconstruct import deconstructible
+from django.core import validators
 from django.db import models
 
 from gando.utils.converters.images import small_blur_base64
@@ -41,14 +45,14 @@ class BaseMultiplyField(models.Field):
         super().__init__(**{})
 
     def sub_field_contribute_to_class(
-            self,
+        self,
 
-            cls,
-            field_name,
+        cls,
+        field_name,
 
-            sub_field_name,
-            sub_filed_class,
-            sub_field_default_attr=None,
+        sub_field_name,
+        sub_filed_class,
+        sub_field_default_attr=None,
     ):
 
         my_kwargs = self.__get_my_kwargs(
@@ -256,3 +260,85 @@ class ImageField(BaseMultiplyField):
         )
 
         setattr(cls, name, ImageProperty(name))
+
+
+@deconstructible
+class PhoneNumberValidator(validators.RegexValidator):
+    regex = r"^([+])([0-9]){1,31}$"
+    message = _(
+        "Enter a valid phone_number.\n"
+        "Sample +123456789012"
+    )
+    flags = 0
+
+
+class PhoneNumberField(models.CharField):
+    __validator = PhoneNumberValidator()
+    default_validators = [__validator]
+    description = _('PhoneNumber')
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('max_length', 31)
+        super().__init__(*args, **kwargs)
+
+
+@deconstructible
+class UnicodeUsernameValidator(validators.RegexValidator):
+    regex = r"^([0-9a-zA-Z_]){3,127}$"
+    message = _(
+        "Enter a valid username. This value may contain only letters, "
+        "numbers, and underline(_) character."
+    )
+    flags = 0
+
+
+class UsernameField(models.CharField):
+    __validator = UnicodeUsernameValidator()
+    default_validators = [__validator]
+    description = _('Username')
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault(
+            'max_length', 127, )
+        kwargs.setdefault(
+            'unique', True, )
+        kwargs.setdefault(
+            'blank', False, )
+        kwargs.setdefault(
+            'null', False, )
+        kwargs.setdefault(
+            'db_index', True, )
+        kwargs.setdefault(
+            'help_text', _('Required. 255 characters or fewer. Letters, digits and @/./+/-/_ only.'), )
+        kwargs.setdefault(
+            'error_messages', {'unique': _('A user with that username already exists.')}, )
+
+        super().__init__(*args, **kwargs)
+
+
+@deconstructible
+class PasswordValidator(validators.RegexValidator):
+    regex = r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*_]).{8,31}$"
+    message = _(
+        "Enter a valid password. This value may contain only letters, "
+        "numbers, and characters(! @ # $ % ^ & * _)."
+    )
+    flags = 0
+
+
+class PasswordField(models.CharField):
+    __validator = PasswordValidator()
+    default_validators = [__validator]
+    description = _('Password')
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault(
+            'max_length', 255, )
+        kwargs.setdefault(
+            'blank', False, )
+        kwargs.setdefault(
+            'null', False, )
+        kwargs.setdefault(
+            'db_index', True, )
+
+        super().__init__(*args, **kwargs)
