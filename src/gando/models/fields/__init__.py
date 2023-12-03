@@ -301,14 +301,6 @@ class UsernameField(models.CharField):
         kwargs.setdefault(
             'max_length', 127, )
         kwargs.setdefault(
-            'unique', True, )
-        kwargs.setdefault(
-            'blank', False, )
-        kwargs.setdefault(
-            'null', False, )
-        kwargs.setdefault(
-            'db_index', True, )
-        kwargs.setdefault(
             'help_text', _('Required. 255 characters or fewer. Letters, digits and @/./+/-/_ only.'), )
         kwargs.setdefault(
             'error_messages', {'unique': _('A user with that username already exists.')}, )
@@ -334,12 +326,6 @@ class PasswordField(models.CharField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault(
             'max_length', 255, )
-        kwargs.setdefault(
-            'blank', False, )
-        kwargs.setdefault(
-            'null', False, )
-        kwargs.setdefault(
-            'db_index', True, )
 
         super().__init__(*args, **kwargs)
 
@@ -352,11 +338,5 @@ class BooleanNumberField(models.IntegerField):
             'default', 0, )
         kwargs.setdefault(
             'choices', ((0, 'No',), (1, 'Yes',),), )
-        kwargs.setdefault(
-            'blank', False, )
-        kwargs.setdefault(
-            'null', False, )
-        kwargs.setdefault(
-            'db_index', True, )
 
         super().__init__(*args, **kwargs)
