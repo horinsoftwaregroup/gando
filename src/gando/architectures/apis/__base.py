@@ -108,8 +108,6 @@ class BaseAPI(APIView):
 
             # 'content_type': content_type,
 
-            'messages': messages,
-
             'monitor': monitor,
             'many': many,
             'data': data,
@@ -117,6 +115,8 @@ class BaseAPI(APIView):
         if self.__debug_status:
             # tmp['headers'] = headers
             pass
+        if self.__messages_response_displayed:
+            tmp['messages'] = messages
 
         ret = tmp
         return ret
@@ -253,6 +253,10 @@ class BaseAPI(APIView):
     @property
     def __debug_status(self):
         return SETTINGS.DEBUG
+
+    @property
+    def __messages_response_displayed(self):
+        return SETTINGS.MESSAGES_RESPONSE_DISPLAYED
 
     def response(self, output_data=None):
         data = output_data
