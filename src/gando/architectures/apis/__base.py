@@ -115,7 +115,8 @@ class BaseAPI(APIView):
             'data': data,
         }
         if self.__debug_status:
-            tmp['headers'] = headers
+            # tmp['headers'] = headers
+            pass
 
         ret = tmp
         return ret
