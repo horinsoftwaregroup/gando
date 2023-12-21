@@ -19,10 +19,29 @@ def verbose_name(value: str):
 class BaseModelAdmin(admin.ModelAdmin):
 
     def __init__(self, *args, **kwargs):
+        # Display Management
+        self.available_field_in_display_list = True
+        self.id_field_in_display_list = True
+        self.created_dt_field_in_display_list = True
+        self.updated_dt_field_in_display_list = True
+
         self.list_display = [] if not self.list_display else self.list_display
         self.list_display_links = [] if not self.list_display_links else self.list_display_links
+
+        # Filter Fields Management
+        self.available_field_in_filter_list = True
+        self.created_dt_field_in_filter_list = True
+        self.updated_dt_field_in_filter_list = True
         self.list_filter = [] if not self.list_filter else self.list_filter
+
+        # Search Fields Management
+        self.id_field_in_search_fields = True
         self.search_fields = [] if not self.search_fields else self.search_fields
+
+        # Readonly Fields Management
+        self.id_field_is_readonly = True
+        self.created_dt_field_is_readonly = True
+        self.updated_dt_field_is_readonly = True
         self.readonly_fields = [] if not self.readonly_fields else self.readonly_fields
 
         super().__init__(*args, **kwargs)
@@ -37,11 +56,11 @@ class BaseModelAdmin(admin.ModelAdmin):
     def list_display(self, value):
         value = list(value)
 
-        tmp = ['available'] if 'available' not in value else []
-        tmp += ['id'] if 'id' not in value else []
+        tmp = ['available'] if 'available' not in value and self.available_field_in_display_list else []
+        tmp += ['id'] if 'id' not in value and self.id_field_in_display_list else []
         tmp += value
-        tmp += ['created_dt'] if 'created_dt' not in value else []
-        tmp += ['updated_dt'] if 'updated_dt' not in value else []
+        tmp += ['created_dt'] if 'created_dt' not in value and self.created_dt_field_in_display_list else []
+        tmp += ['updated_dt'] if 'updated_dt' not in value and self.updated_dt_field_in_display_list else []
 
         self._list_display = tmp
 
@@ -55,11 +74,11 @@ class BaseModelAdmin(admin.ModelAdmin):
     def list_display_links(self, value):
         value = list(value)
 
-        tmp = ['available'] if 'available' not in value else []
-        tmp += ['id'] if 'id' not in value else []
+        tmp = ['available'] if 'available' not in value and self.available_field_in_display_list else []
+        tmp += ['id'] if 'id' not in value and self.id_field_in_display_list else []
         tmp += value
-        tmp += ['created_dt'] if 'created_dt' not in value else []
-        tmp += ['updated_dt'] if 'updated_dt' not in value else []
+        tmp += ['created_dt'] if 'created_dt' not in value and self.created_dt_field_in_display_list else []
+        tmp += ['updated_dt'] if 'updated_dt' not in value and self.updated_dt_field_in_display_list else []
 
         self._list_display_links = tmp
 
@@ -112,11 +131,11 @@ class BaseModelAdmin(admin.ModelAdmin):
     def readonly_fields(self, value):
         value = list(value)
 
-        tmp = ['id'] if 'id' not in value else []
+        tmp = ['id'] if 'id' not in value and self.id_field_is_readonly else []
         tmp += value
         tmp += self.__get_image_read_only_fields()
-        tmp += ['created_dt'] if 'created_dt' not in value else []
-        tmp += ['updated_dt'] if 'updated_dt' not in value else []
+        tmp += ['created_dt'] if 'created_dt' not in value and self.created_dt_field_is_readonly else []
+        tmp += ['updated_dt'] if 'updated_dt' not in value and self.updated_dt_field_is_readonly else []
 
         self._readonly_fields = tmp
 
@@ -130,10 +149,10 @@ class BaseModelAdmin(admin.ModelAdmin):
     def list_filter(self, value):
         value = list(value)
 
-        tmp = ['available'] if 'available' not in value else []
+        tmp = ['available'] if 'available' not in value and self.available_field_in_filter_list else []
         tmp += value
-        tmp += ['created_dt'] if 'created_dt' not in value else []
-        tmp += ['updated_dt'] if 'updated_dt' not in value else []
+        tmp += ['created_dt'] if 'created_dt' not in value and self.created_dt_field_in_filter_list else []
+        tmp += ['updated_dt'] if 'updated_dt' not in value and self.updated_dt_field_in_filter_list else []
 
         self._list_filter = tmp
 
@@ -147,7 +166,7 @@ class BaseModelAdmin(admin.ModelAdmin):
     def search_fields(self, value):
         value = list(value)
 
-        tmp = ['id'] if 'id' not in value else []
+        tmp = ['id'] if 'id' not in value and self.id_field_in_search_fields else []
         tmp += value
 
         self._search_fields = tmp
