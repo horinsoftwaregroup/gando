@@ -56,11 +56,24 @@ class BaseModelAdmin(admin.ModelAdmin):
     def list_display(self, value):
         value = list(value)
 
-        tmp = ['available'] if 'available' not in value and self.available_field_in_display_list else []
-        tmp += ['id'] if 'id' not in value and self.id_field_in_display_list else []
+        available_field_in_display_list = (
+            self.available_field_in_display_list
+            if hasattr(self, 'available_field_in_display_list') else False)
+        id_field_in_display_list = (
+            self.id_field_in_display_list
+            if hasattr(self, 'id_field_in_display_list') else False)
+        created_dt_field_in_display_list = (
+            self.created_dt_field_in_display_list
+            if hasattr(self, 'created_dt_field_in_display_list') else False)
+        updated_dt_field_in_display_list = (
+            self.updated_dt_field_in_display_list
+            if hasattr(self, 'updated_dt_field_in_display_list') else False)
+
+        tmp = ['available'] if 'available' not in value and available_field_in_display_list else []
+        tmp += ['id'] if 'id' not in value and id_field_in_display_list else []
         tmp += value
-        tmp += ['created_dt'] if 'created_dt' not in value and self.created_dt_field_in_display_list else []
-        tmp += ['updated_dt'] if 'updated_dt' not in value and self.updated_dt_field_in_display_list else []
+        tmp += ['created_dt'] if 'created_dt' not in value and created_dt_field_in_display_list else []
+        tmp += ['updated_dt'] if 'updated_dt' not in value and updated_dt_field_in_display_list else []
 
         self._list_display = tmp
 
@@ -74,11 +87,24 @@ class BaseModelAdmin(admin.ModelAdmin):
     def list_display_links(self, value):
         value = list(value)
 
-        tmp = ['available'] if 'available' not in value and self.available_field_in_display_list else []
-        tmp += ['id'] if 'id' not in value and self.id_field_in_display_list else []
+        available_field_in_display_list = (
+            self.available_field_in_display_list
+            if hasattr(self, 'available_field_in_display_list') else False)
+        id_field_in_display_list = (
+            self.id_field_in_display_list
+            if hasattr(self, 'id_field_in_display_list') else False)
+        created_dt_field_in_display_list = (
+            self.created_dt_field_in_display_list
+            if hasattr(self, 'created_dt_field_in_display_list') else False)
+        updated_dt_field_in_display_list = (
+            self.updated_dt_field_in_display_list
+            if hasattr(self, 'updated_dt_field_in_display_list') else False)
+
+        tmp = ['available'] if 'available' not in value and available_field_in_display_list else []
+        tmp += ['id'] if 'id' not in value and id_field_in_display_list else []
         tmp += value
-        tmp += ['created_dt'] if 'created_dt' not in value and self.created_dt_field_in_display_list else []
-        tmp += ['updated_dt'] if 'updated_dt' not in value and self.updated_dt_field_in_display_list else []
+        tmp += ['created_dt'] if 'created_dt' not in value and created_dt_field_in_display_list else []
+        tmp += ['updated_dt'] if 'updated_dt' not in value and updated_dt_field_in_display_list else []
 
         self._list_display_links = tmp
 
@@ -130,12 +156,24 @@ class BaseModelAdmin(admin.ModelAdmin):
     @readonly_fields.setter
     def readonly_fields(self, value):
         value = list(value)
+        id_field_is_readonly = (
+            self.id_field_is_readonly
+            if hasattr(self, 'id_field_is_readonly') else False
+        )
+        created_dt_field_is_readonly = (
+            self.created_dt_field_is_readonly
+            if hasattr(self, 'created_dt_field_is_readonly') else False
+        )
+        updated_dt_field_is_readonly = (
+            self.updated_dt_field_is_readonly
+            if hasattr(self, 'updated_dt_field_is_readonly') else False
+        )
 
-        tmp = ['id'] if 'id' not in value and self.id_field_is_readonly else []
+        tmp = ['id'] if 'id' not in value and id_field_is_readonly else []
         tmp += value
         tmp += self.__get_image_read_only_fields()
-        tmp += ['created_dt'] if 'created_dt' not in value and self.created_dt_field_is_readonly else []
-        tmp += ['updated_dt'] if 'updated_dt' not in value and self.updated_dt_field_is_readonly else []
+        tmp += ['created_dt'] if 'created_dt' not in value and created_dt_field_is_readonly else []
+        tmp += ['updated_dt'] if 'updated_dt' not in value and updated_dt_field_is_readonly else []
 
         self._readonly_fields = tmp
 
@@ -149,10 +187,20 @@ class BaseModelAdmin(admin.ModelAdmin):
     def list_filter(self, value):
         value = list(value)
 
-        tmp = ['available'] if 'available' not in value and self.available_field_in_filter_list else []
+        available_field_in_filter_list = (
+            self.available_field_in_filter_list
+            if hasattr(self, 'available_field_in_filter_list') else False)
+        created_dt_field_in_filter_list = (
+            self.created_dt_field_in_filter_list
+            if hasattr(self, 'created_dt_field_in_filter_list') else False)
+        updated_dt_field_in_filter_list = (
+            self.updated_dt_field_in_filter_list
+            if hasattr(self, 'updated_dt_field_in_filter_list') else False)
+
+        tmp = ['available'] if 'available' not in value and available_field_in_filter_list else []
         tmp += value
-        tmp += ['created_dt'] if 'created_dt' not in value and self.created_dt_field_in_filter_list else []
-        tmp += ['updated_dt'] if 'updated_dt' not in value and self.updated_dt_field_in_filter_list else []
+        tmp += ['created_dt'] if 'created_dt' not in value and created_dt_field_in_filter_list else []
+        tmp += ['updated_dt'] if 'updated_dt' not in value and updated_dt_field_in_filter_list else []
 
         self._list_filter = tmp
 
@@ -166,7 +214,10 @@ class BaseModelAdmin(admin.ModelAdmin):
     def search_fields(self, value):
         value = list(value)
 
-        tmp = ['id'] if 'id' not in value and self.id_field_in_search_fields else []
+        id_field_in_search_fields = (
+            self.id_field_in_search_fields if hasattr(self, 'id_field_in_search_fields') else False)
+
+        tmp = ['id'] if 'id' not in value and id_field_in_search_fields else []
         tmp += value
 
         self._search_fields = tmp
