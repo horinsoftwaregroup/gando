@@ -108,7 +108,7 @@ class BaseAPI(APIView):
 
             # 'content_type': content_type,
 
-            'monitor': monitor,
+            'monitor': self.monitor_play(monitor),
             'many': many,
             'data': data,
         }
@@ -217,6 +217,12 @@ class BaseAPI(APIView):
     def set_monitor(self, key, value):
         if key in self.__allowed_monitor_keys:
             self.__monitor[key] = value
+
+    def monitor_play(self, monitor=None, *args, **kwargs):
+        monitor = monitor or {}
+        for key, func in SETTINGS.MONITOR.items():
+            monitor[key] = func(request=self.request, *args, **kwargs)
+        return monitor
 
     @property
     def __allowed_monitor_keys(self):

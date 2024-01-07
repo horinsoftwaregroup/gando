@@ -9,6 +9,7 @@ class Gando(Base):
     DEBUG: bool = True
     CACHING: bool = False
     MESSAGES_RESPONSE_DISPLAYED: bool = True
+    MONITOR: dict = dict()
 
 
 @lru_cache()
