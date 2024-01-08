@@ -1,3 +1,5 @@
+import importlib
+
 from pydantic import BaseModel
 from typing import Any
 
@@ -218,10 +220,21 @@ class BaseAPI(APIView):
         if key in self.__allowed_monitor_keys:
             self.__monitor[key] = value
 
+    def __monitor_func_loader(self, f, *args, **kwargs):
+        try:
+            mod_name, func_name = f.rsplit('.', 1)
+            mod = importlib.import_module(mod_name)
+            func = getattr(mod, func_name)
+
+            return func(request=self.request, *args, **kwargs)
+        except:
+            return None
+
     def monitor_play(self, monitor=None, *args, **kwargs):
         monitor = monitor or {}
-        for key, func in SETTINGS.MONITOR.items():
-            monitor[key] = func(request=self.request, *args, **kwargs)
+        for key, f in SETTINGS.MONITOR.items():
+            monitor[key] = self.__monitor_func_loader(f, *args, **kwargs)
+
         return monitor
 
     @property
