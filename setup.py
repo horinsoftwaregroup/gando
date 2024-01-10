@@ -43,5 +43,6 @@ setuptools.setup(
         'django-filter',
         'django-simple-history',
         'Pillow',
+        'httpx',
     ],
 )
