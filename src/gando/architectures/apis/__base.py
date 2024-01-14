@@ -16,6 +16,14 @@ from rest_framework.exceptions import ErrorDetail
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from rest_framework.generics import (
+    CreateAPIView as DRFGCreateAPIView,
+    ListAPIView as DRFGListAPIView,
+    RetrieveAPIView as DRFGRetrieveAPIView,
+    UpdateAPIView as DRFGUpdateAPIView,
+    DestroyAPIView as DRFGDestroyAPIView,
+)
+
 
 class BaseAPI(APIView):
     def __init__(self, **kwargs):
@@ -436,3 +444,23 @@ class BaseAPI(APIView):
     def cookie_deleter(self, key: str):
         ret = self.__cookies_for_delete.append(key)
         return ret
+
+
+class CreateAPIView(BaseAPI, DRFGCreateAPIView):
+    pass
+
+
+class ListAPIView(BaseAPI, DRFGListAPIView):
+    pass
+
+
+class RetrieveAPIView(BaseAPI, DRFGRetrieveAPIView):
+    pass
+
+
+class UpdateAPIView(BaseAPI, DRFGUpdateAPIView):
+    pass
+
+
+class DestroyAPIView(BaseAPI, DRFGDestroyAPIView):
+    pass
