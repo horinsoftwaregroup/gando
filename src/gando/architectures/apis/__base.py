@@ -96,8 +96,12 @@ class BaseAPI(APIView):
         )
         if SETTINGS.EXCEPTION_HANDLER.COMMUNICATION_WITH_SOFTWARE_SUPPORT:
             self.set_info_message(
-                key='communicationWithSoftwareSupport',
-                value=f'{SETTINGS.EXCEPTION_HANDLER.COMMUNICATION_WITH_SOFTWARE_SUPPORT}',
+                key='unexpectedError',
+                value=(
+                    f"Please share this problem with our technical experts"
+                    f" at the Email address "
+                    f"'{SETTINGS.EXCEPTION_HANDLER.COMMUNICATION_WITH_SOFTWARE_SUPPORT}'."
+                ),
             )
         self.set_status_code(421)
         response.exception = True
