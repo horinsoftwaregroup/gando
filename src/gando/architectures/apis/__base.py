@@ -89,6 +89,7 @@ class BaseAPI(APIView):
                         response.set_cookie(**i)
         except Exception as exc:
             self.set_exception_message(key='BaseException', value=exc.args[0])
+            self.set_status_code(421)
         return super().finalize_response(request, response, *args, **kwargs)
 
     def response_context(self, data=None):
