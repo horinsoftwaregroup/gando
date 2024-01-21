@@ -95,7 +95,7 @@ class BaseAPI(APIView):
             value='Please discuss this matter with software support.',
         )
         if SETTINGS.EXCEPTION_HANDLER.COMMUNICATION_WITH_SOFTWARE_SUPPORT:
-            self.set_warning_message(
+            self.set_info_message(
                 key='communicationWithSoftwareSupport',
                 value=f'{SETTINGS.EXCEPTION_HANDLER.COMMUNICATION_WITH_SOFTWARE_SUPPORT}',
             )
