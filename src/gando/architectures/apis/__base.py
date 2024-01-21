@@ -50,9 +50,9 @@ class BaseAPI(APIView):
         self.__exception_status: bool = False
 
     def handle_exception(self, exc):
-        if self.__debug_status is False or SETTINGS.EXCEPTION_HANDLER.HANDLING is False:
-            return self._handle_exception_gando_handling_false(exc)
-        return self._handle_exception_gando_handling_true(exc)
+        if SETTINGS.EXCEPTION_HANDLER.HANDLING:
+            return self._handle_exception_gando_handling_true(exc)
+        return self._handle_exception_gando_handling_false(exc)
 
     def _handle_exception_gando_handling_true(self, exc):
         """
