@@ -49,44 +49,46 @@ class BaseAPI(APIView):
         self.__exception_status: bool = False
 
     def finalize_response(self, request, response, *args, **kwargs):
-        if isinstance(response, Response):
-            self.helper()
+        try:
+            if isinstance(response, Response):
+                self.helper()
 
-            tmp = response.template_name if hasattr(response, 'template_name') else None
-            template_name = tmp
+                tmp = response.template_name if hasattr(response, 'template_name') else None
+                template_name = tmp
 
-            tmp = response.headers if hasattr(response, 'headers') else None
-            headers = self.get_headers(tmp)
+                tmp = response.headers if hasattr(response, 'headers') else None
+                headers = self.get_headers(tmp)
 
-            tmp = response.exception if hasattr(response, 'exception') else None
-            exception = self.get_exception_status(tmp)
+                tmp = response.exception if hasattr(response, 'exception') else None
+                exception = self.get_exception_status(tmp)
 
-            tmp = response.content_type if hasattr(response, 'content_type') else None
-            content_type = tmp
+                tmp = response.content_type if hasattr(response, 'content_type') else None
+                content_type = tmp
 
-            tmp = response.status_code if hasattr(response, 'status_code') else None
-            status_code = self.get_status_code(tmp)
+                tmp = response.status_code if hasattr(response, 'status_code') else None
+                status_code = self.get_status_code(tmp)
 
-            tmp = response.data if hasattr(response, 'data') else None
-            data = self.response_context(tmp)
+                tmp = response.data if hasattr(response, 'data') else None
+                data = self.response_context(tmp)
 
-            response = Response(
-                data=data,
-                status=status_code,
-                template_name=template_name,
-                headers=headers,
-                exception=exception,
-                content_type=content_type,
-            )
+                response = Response(
+                    data=data,
+                    status=status_code,
+                    template_name=template_name,
+                    headers=headers,
+                    exception=exception,
+                    content_type=content_type,
+                )
 
-            if self.__cookies_for_delete:
-                for i in self.__cookies_for_delete:
-                    response.delete_cookie(i)
+                if self.__cookies_for_delete:
+                    for i in self.__cookies_for_delete:
+                        response.delete_cookie(i)
 
-            if self.__cookies_for_set:
-                for i in self.__cookies_for_set:
-                    response.set_cookie(**i)
-
+                if self.__cookies_for_set:
+                    for i in self.__cookies_for_set:
+                        response.set_cookie(**i)
+        except Exception as exc:
+            self.set_exception_message(key='BaseException', value=exc.args[0])
         return super().finalize_response(request, response, *args, **kwargs)
 
     def response_context(self, data=None):
