@@ -23,6 +23,7 @@ from rest_framework.generics import (
     UpdateAPIView as DRFGUpdateAPIView,
     DestroyAPIView as DRFGDestroyAPIView,
 )
+from rest_framework import exceptions, status
 
 
 class BaseAPI(APIView):
@@ -48,13 +49,49 @@ class BaseAPI(APIView):
         self.__content_type: str | None = None
         self.__exception_status: bool = False
 
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            return super().dispatch(self, request, *args, **kwargs)
-        except Exception as exc:
-            self.set_exception_message(key='BaseException', value=exc.args[0])
-            self.set_status_code(421)
-        return Response()
+    def handle_exception(self, exc):
+        """
+        Handle any exception that occurs, by returning an appropriate response,
+        or re-raising the error.
+        """
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
+            # WWW-Authenticate header for 401 responses, else coerce to 403
+            auth_header = self.get_authenticate_header(self.request)
+
+            if auth_header:
+                exc.auth_header = auth_header
+            else:
+                exc.status_code = status.HTTP_403_FORBIDDEN
+
+        exception_handler = self.get_exception_handler()
+
+        context = self.get_exception_handler_context()
+        response = exception_handler(exc, context)
+
+        if response is None:
+            response = Response()
+
+        self.set_exception_message(
+                key='unexpectedError',
+                value=exc.args[0]
+            )
+        self.set_error_message(
+                key='unexpectedError',
+                value=(
+                    "An unexpected error has occurred based on your request type.\n"
+                    "Please do not repeat this request without changing your request.\n"
+                    "Be sure to read the documents on how to use this service correctly.\n"
+                    "In any case, discuss the issue with software support.\n"
+                )
+            )
+        self.set_warning_message(
+                key='unexpectedError',
+                value='Please discuss this matter with software support.',
+            )
+        self.set_status_code(421)
+        response.exception = True
+        return response
 
     def finalize_response(self, request, response, *args, **kwargs):
         if isinstance(response, Response):
@@ -186,11 +223,11 @@ class BaseAPI(APIView):
         if isinstance(self.__data, list):
             return True
         if (
-            isinstance(self.__data, dict) and
-            'count' in self.__data and
-            'next' in self.__data and
-            'previous' in self.__data and
-            'results' in self.__data
+                isinstance(self.__data, dict) and
+                'count' in self.__data and
+                'next' in self.__data and
+                'previous' in self.__data and
+                'results' in self.__data
         ):
             return True
         return False
