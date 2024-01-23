@@ -49,6 +49,31 @@ class BaseAPI(APIView):
         self.__content_type: str | None = None
         self.__exception_status: bool = False
 
+    def __paste_to_request_func_loader(self, f, request, *args, **kwargs):
+        try:
+            mod_name, func_name = f.rsplit('.', 1)
+            mod = importlib.import_module(mod_name)
+            func = getattr(mod, func_name)
+
+            return func(request=request, *args, **kwargs)
+        except:
+            return None
+
+    def paste_to_request_func_loader_play(self, request, *args, **kwargs):
+        for key, f in SETTINGS.PASTE_TO_REQUEST.items():
+            rslt = self.__paste_to_request_func_loader(f, request, *args, **kwargs)
+            if rslt:
+                setattr(request, key, rslt)
+
+        return request
+
+    def initialize_request(self, request, *args, **kwargs):
+
+        request_ = super().initialize_request(request, *args, **kwargs)
+        rslt = self.paste_to_request_func_loader_play(request_)
+        ret = rslt
+        return ret
+
     def handle_exception(self, exc):
         if SETTINGS.EXCEPTION_HANDLER.HANDLING:
             return self._handle_exception_gando_handling_true(exc)

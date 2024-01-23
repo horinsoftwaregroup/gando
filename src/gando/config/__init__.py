@@ -16,6 +16,7 @@ class Gando(Base):
     MESSAGES_RESPONSE_DISPLAYED: bool = True
     MONITOR: dict = dict()
     EXCEPTION_HANDLER: ExceptionHandlerObject = ExceptionHandlerObject()
+    PASTE_TO_REQUEST: dict = dict()
 
 
 @lru_cache()
