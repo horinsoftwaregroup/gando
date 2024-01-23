@@ -8,17 +8,16 @@ def validate(value):
     value = str(value).lower()
     match value:
         case 't':
-            value = True
+            return True
         case 'true':
-            value = True
+            return True
         case '1':
-            value = True
+            return True
         case 'f':
-            value = False
+            return False
         case 'false':
-            value = False
+            return False
         case '0':
-            value = False
+            return False
         case _:
-
             raise ValidationError(validation_error_message)

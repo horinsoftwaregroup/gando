@@ -17,3 +17,4 @@ def validate(value):
         raise ValidationError(validation_error_message)
 
     value = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+    return value

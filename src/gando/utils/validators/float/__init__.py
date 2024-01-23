@@ -13,3 +13,4 @@ def validate(value):
         raise ValidationError(validation_error_message)
 
     value = float(value)
+    return value

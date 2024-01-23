@@ -18,3 +18,4 @@ def validate(value):
 
     value = datetime.strptime(f'{value} 00:00:00', '%Y-%m-%d %H:%M:%S')
     value = date(year=value.year, month=value.month, day=value.day)
+    return value

@@ -11,3 +11,4 @@ def validate(value, pattern: Optional[str] = None, validation_error_message: Opt
         'The value of this section should only contain lowercase letters, English numbers and - sign.')
     if not re.match(pattern, value):
         raise ValidationError(validation_error_message)
+    return value

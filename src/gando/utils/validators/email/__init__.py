@@ -13,3 +13,4 @@ def validate(value):
     value = str(value)
     if not re.match(pattern, value):
         raise ValidationError(validation_error_message)
+    return value

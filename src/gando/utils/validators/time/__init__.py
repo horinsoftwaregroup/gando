@@ -19,3 +19,4 @@ def validate(value):
     n = f'{n.year}-{n.month}-{n.day}'
     value = datetime.strptime(f'{n} {value}', '%Y-%m-%d %H:%M:%S')
     value = time(hour=value.hour, minute=value.minute, second=value.second)
+    return value
