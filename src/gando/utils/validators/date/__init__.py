@@ -3,7 +3,7 @@ import re
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
-from datetime import datetime
+from datetime import datetime, date
 
 
 def validate(value):
@@ -17,3 +17,4 @@ def validate(value):
         raise ValidationError(validation_error_message)
 
     value = datetime.strptime(f'{value} 00:00:00', '%Y-%m-%d %H:%M:%S')
+    value = date(year=value.year, month=value.month, day=value.day)
