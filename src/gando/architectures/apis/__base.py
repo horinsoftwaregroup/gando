@@ -1,7 +1,7 @@
-import importlib
-
+from inspect import currentframe, getframeinfo
 from pydantic import BaseModel
 from typing import Any
+import importlib
 
 from gando.http.responses.string_messages import (
     InfoStringMessage,
@@ -10,12 +10,25 @@ from gando.http.responses.string_messages import (
     LogStringMessage,
     ExceptionStringMessage,
 )
+from gando.utils.exceptions import PassException
+from gando.utils.messages import (
+    DefaultResponse100FailMessage,
+    DefaultResponse200SuccessMessage,
+    DefaultResponse201SuccessMessage,
+    DefaultResponse300FailMessage,
+    DefaultResponse400FailMessage,
+    DefaultResponse401FailMessage,
+    DefaultResponse403FailMessage,
+    DefaultResponse404FailMessage,
+    DefaultResponse421FailMessage,
+    DefaultResponse500FailMessage,
+)
 from gando.config import SETTINGS
 
 from rest_framework.exceptions import ErrorDetail
+from rest_framework import exceptions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from rest_framework.generics import (
     CreateAPIView as DRFGCreateAPIView,
     ListAPIView as DRFGListAPIView,
@@ -23,12 +36,13 @@ from rest_framework.generics import (
     UpdateAPIView as DRFGUpdateAPIView,
     DestroyAPIView as DRFGDestroyAPIView,
 )
-from rest_framework import exceptions, status
 
 
 class BaseAPI(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.__messenger = []
 
         self.__data = None
 
@@ -56,7 +70,13 @@ class BaseAPI(APIView):
             func = getattr(mod, func_name)
 
             return func(request=request, *args, **kwargs)
-        except:
+        except PassException as exc:
+            frame_info = getframeinfo(currentframe())
+            self.set_log_message(
+                key='pass',
+                value=f"message:{exc.args[0]}, "
+                      f"file_name: {frame_info.filename}, "
+                      f"line_number: {frame_info.lineno}")
             return None
 
     def paste_to_request_func_loader_play(self, request, *args, **kwargs):
@@ -86,7 +106,6 @@ class BaseAPI(APIView):
         """
         if isinstance(exc, (exceptions.NotAuthenticated,
                             exceptions.AuthenticationFailed)):
-            # WWW-Authenticate header for 401 responses, else coerce to 403
             auth_header = self.get_authenticate_header(self.request)
 
             if auth_header:
@@ -226,9 +245,10 @@ class BaseAPI(APIView):
             'has_warning': has_warning,
             'exception_status': exception_status,
 
-            # 'content_type': content_type,
-
             'monitor': self.monitor_play(monitor),
+
+            'messenger': self.__messenger,
+
             'many': many,
             'data': data,
         }
@@ -236,10 +256,40 @@ class BaseAPI(APIView):
             # tmp['headers'] = headers
             pass
         if self.__messages_response_displayed:
-            tmp['messages'] = messages
+            tmp['development_messages'] = messages
 
         ret = tmp
         return ret
+
+    def __add_to_messenger(self, message, code, type_):
+        self.__messenger.append(
+            {
+                'type': type_,
+                'code': code,
+                'message': message,
+            }
+        )
+
+    def add_error_message_to_messenger(self, message, code):
+        self.__add_to_messenger(
+            message=message,
+            code=code,
+            type_='ERROR',
+        )
+
+    def add_warning_message_to_messenger(self, message, code):
+        self.__add_to_messenger(
+            message=message,
+            code=code,
+            type_='WARNING',
+        )
+
+    def add_success_message_to_messenger(self, message, code):
+        self.__add_to_messenger(
+            message=message,
+            code=code,
+            type_='SUCCESS',
+        )
 
     def set_log_message(self, key, value):
         log = {key: value}
@@ -297,8 +347,19 @@ class BaseAPI(APIView):
             return True
         return False
 
+    def __fail_message_messenger(self):
+        for msg in self.__messenger:
+            if msg.get('type', '') == 'FAIL':
+                return True
+        return False
+
     def __success(self):
-        if len(self.__errors_message) == 0 and len(self.__exceptions_message) == 0 and not self.__exception_status:
+        if (
+            len(self.__errors_message) == 0 and
+            len(self.__exceptions_message) == 0 and
+            not self.__exception_status and
+            not self.__fail_message_messenger()
+        ):
             return True
         return False
 
@@ -345,7 +406,13 @@ class BaseAPI(APIView):
             func = getattr(mod, func_name)
 
             return func(request=self.request, *args, **kwargs)
-        except:
+        except PassException as exc:
+            frame_info = getframeinfo(currentframe())
+            self.set_log_message(
+                key='pass',
+                value=f"message:{exc.args[0]}, "
+                      f"file_name: {frame_info.filename}, "
+                      f"line_number: {frame_info.lineno}")
             return None
 
     def monitor_play(self, monitor=None, *args, **kwargs):
@@ -412,7 +479,8 @@ class BaseAPI(APIView):
         ret = f'{self.get_host()}{value}'
         return ret
 
-    def get_media_url(self):
+    @staticmethod
+    def get_media_url():
         from django.conf import settings
 
         ret = settings.MEDIA_URL
@@ -436,7 +504,10 @@ class BaseAPI(APIView):
             msg = 'please wait...'
 
         elif 200 <= status_code < 300:
-            msg = 'Your request has been successfully registered.'
+            if status_code == 201:
+                msg = 'The desired object was created correctly.'
+            else:
+                msg = 'Your request has been successfully registered.'
 
         elif 300 <= status_code < 400:
             msg = 'The requirements for your request are not available.'
@@ -446,14 +517,21 @@ class BaseAPI(APIView):
                 msg = 'Bad Request...'
 
             elif status_code == 401:
-                msg = {'result': {
-                    'message': 'Your authentication information is not available.'}}
+                msg = 'Your authentication information is not available.'
 
             elif status_code == 403:
                 msg = 'You do not have access to this section.'
 
             elif status_code == 404:
                 msg = 'There is no information about your request.'
+
+            elif status_code == 421:
+                msg = (
+                    "An unexpected error has occurred based on your request type.\n"
+                    "Please do not repeat this request without changing your request.\n"
+                    "Be sure to read the documents on how to use this service correctly.\n"
+                    "In any case, discuss the issue with software support.\n"
+                )
 
             else:
                 msg = 'There was an error in how to send the request.'
@@ -466,7 +544,93 @@ class BaseAPI(APIView):
 
         return msg
 
+    def __default_messenger_message_adder(self):
+        status_code = self.get_status_code()
+
+        if 100 <= status_code < 200:
+            self.__add_to_messenger(
+                message=DefaultResponse100FailMessage.message,
+                code=DefaultResponse100FailMessage.code,
+                type_=DefaultResponse100FailMessage.type,
+            )
+
+        elif 200 <= status_code < 300:
+            if status_code == 201:
+                self.__add_to_messenger(
+                    message=DefaultResponse201SuccessMessage.message,
+                    code=DefaultResponse201SuccessMessage.code,
+                    type_=DefaultResponse201SuccessMessage.type,
+                )
+            else:
+                self.__add_to_messenger(
+                    message=DefaultResponse200SuccessMessage.message,
+                    code=DefaultResponse200SuccessMessage.code,
+                    type_=DefaultResponse200SuccessMessage.type,
+                )
+
+        elif 300 <= status_code < 400:
+            self.__add_to_messenger(
+                message=DefaultResponse300FailMessage.message,
+                code=DefaultResponse300FailMessage.code,
+                type_=DefaultResponse300FailMessage.type,
+            )
+
+        elif 400 <= status_code < 500:
+            if status_code == 400:
+                self.__add_to_messenger(
+                    message=DefaultResponse400FailMessage.message,
+                    code=DefaultResponse400FailMessage.code,
+                    type_=DefaultResponse400FailMessage.type,
+                )
+
+            elif status_code == 401:
+                self.__add_to_messenger(
+                    message=DefaultResponse401FailMessage.message,
+                    code=DefaultResponse401FailMessage.code,
+                    type_=DefaultResponse401FailMessage.type,
+                )
+
+            elif status_code == 403:
+                self.__add_to_messenger(
+                    message=DefaultResponse403FailMessage.message,
+                    code=DefaultResponse403FailMessage.code,
+                    type_=DefaultResponse403FailMessage.type,
+                )
+
+            elif status_code == 404:
+                self.__add_to_messenger(
+                    message=DefaultResponse404FailMessage.message,
+                    code=DefaultResponse404FailMessage.code,
+                    type_=DefaultResponse404FailMessage.type,
+                )
+
+            elif status_code == 421:
+                self.__add_to_messenger(
+                    message=DefaultResponse421FailMessage.message,
+                    code=DefaultResponse421FailMessage.code,
+                    type_=DefaultResponse421FailMessage.type,
+                )
+
+            else:
+                self.__add_to_messenger(
+                    message=DefaultResponse400FailMessage.message,
+                    code=DefaultResponse400FailMessage.code,
+                    type_=DefaultResponse400FailMessage.type,
+                )
+
+        elif 500 <= status_code:
+            self.__add_to_messenger(
+                message=DefaultResponse500FailMessage.message,
+                code=DefaultResponse500FailMessage.code,
+                type_=DefaultResponse500FailMessage.type,
+            )
+
+        else:
+            pass
+
     def __set_default_message(self):
+        self.__default_messenger_message_adder()
+
         status_code = self.get_status_code()
 
         if 100 <= status_code < 200:
