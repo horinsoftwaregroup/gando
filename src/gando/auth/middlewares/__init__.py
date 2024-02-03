@@ -1,5 +1,6 @@
 from django.utils.functional import SimpleLazyObject
 from gando.config import SETTINGS
+from django.utils.deprecation import MiddlewareMixin
 
 
 def _get_user_agent_device_id(key):
@@ -43,23 +44,18 @@ def user_agent_device_id(request):
     return uad_id
 
 
-class HorinDeviceID(object):
-
-    def __init__(self, get_response):
-        self.get_response = get_response
+class UserAgentDeviceMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
-        request.uad = SimpleLazyObject(lambda: user_agent_device_id(request))
+        setattr(request, 'uad', user_agent_device_id(request))
 
-    def __call__(self, request):
+    def process_response(self, request, response):
         self.process_request(request)
-
-        rsp = self.get_response(request)
-        rsp.set_cookie(
+        response.set_cookie(
             key=SETTINGS.USER_AGENT_DEVICE_HANDLER.COOKIE_NAME,
             value=request.uad,
             max_age=100000,
             httponly=True,
             secure=True
         )
-        return rsp
+        return response
