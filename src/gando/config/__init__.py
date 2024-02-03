@@ -9,6 +9,11 @@ class ExceptionHandlerObject(Base):
     COMMUNICATION_WITH_SOFTWARE_SUPPORT: str = None
 
 
+class UserAgentDeviceHandlerObject(Base):
+    HANDLING: bool = False
+    COOKIE_NAME: str = 'uad'
+
+
 class Gando(Base):
     MONITOR_KEYS: list = list()
     DEBUG: bool = True
@@ -17,6 +22,7 @@ class Gando(Base):
     MONITOR: dict = dict()
     EXCEPTION_HANDLER: ExceptionHandlerObject = ExceptionHandlerObject()
     PASTE_TO_REQUEST: dict = dict()
+    USER_AGENT_DEVICE_HANDLER: UserAgentDeviceHandlerObject = UserAgentDeviceHandlerObject()
 
 
 @lru_cache()
@@ -35,6 +41,11 @@ def __get_settings():
         ExceptionHandlerObject(**input_conf['EXCEPTION_HANDLER'])
         if 'EXCEPTION_HANDLER' in input_conf
         else ExceptionHandlerObject()
+    )
+    input_conf['USER_AGENT_DEVICE_HANDLER'] = (
+        UserAgentDeviceHandlerObject(**input_conf['USER_AGENT_DEVICE_HANDLER'])
+        if 'USER_AGENT_DEVICE_HANDLER' in input_conf
+        else UserAgentDeviceHandlerObject()
     )
 
     return Gando(**input_conf)
