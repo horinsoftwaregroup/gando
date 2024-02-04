@@ -50,6 +50,10 @@ class UserAgentDeviceMiddleware(MiddlewareMixin):
 
     def process_response(self, request, response):
         self.process_request(request)
+
+        if SETTINGS.USER_AGENT_DEVICE_HANDLER.HANDLING is False:
+            return response
+
         response.set_cookie(
             key=SETTINGS.USER_AGENT_DEVICE_HANDLER.COOKIE_NAME,
             value=request.uad,
