@@ -15,14 +15,18 @@ def _get_user_agent_device_key(key):
 
 
 def _create_user_agent_device_key(request):
-    from gando.models import UserAgentDevice
-    from gando.utils.client import get_user_agent_device_info
+    from gando.models import UserAgentDevice, user_agent_device_key_creator
+    from gando.utils.client import UADSchema
 
-    params = get_user_agent_device_info(request)
-    obj = UserAgentDevice.objects.create(
-        **params
-    )
-    return obj.key
+    params = UADSchema(request)
+    try:
+        obj = UserAgentDevice.objects.create(
+            **params.model_dump()
+        )
+        return obj.key
+    except:
+        key = user_agent_device_key_creator(params)
+        return key
 
 
 def user_agent_device_id(request):
