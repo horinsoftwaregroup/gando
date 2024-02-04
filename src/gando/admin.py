@@ -14,55 +14,56 @@ class UserAgentDeviceModelAdmin(admin.ModelAdmin):
 
         'created_dt',
 
-        'geoip_ip',
-        'geoip_country_code',
-        'geoip_country_name',
-        'geoip_area_code',
-        'geoip_city',
-        'geoip_country_code3',
-        'geoip_dma_code',
-        'geoip_latitude',
-        'geoip_longitude',
-        'geoip_postal_code',
-        'geoip_region',
-        'geoip_time_zone',
-        'geoip_geos_x',
-        'geoip_geos_y',
+        'ip',
 
         'user_agent_is_mobile',
         'user_agent_is_tablet',
         'user_agent_is_touch_capable',
         'user_agent_is_pc',
         'user_agent_is_bot',
-        'user_agent_browser',
+
         'user_agent_browser_family',
-        'user_agent_browser_version_string',
-        'user_agent_os',
-        'user_agent_os_version_string',
-        'user_agent_device',
+        'user_agent_browser_version',
+
+        'user_agent_os_family',
+        'user_agent_os_version',
+
         'user_agent_device_family',
+        'user_agent_device_brand',
+        'user_agent_device_model',
     )
     list_display_links = (
+        'id',
 
+        'key',
+
+        'user',
+
+        'created_dt',
+
+        'ip',
+
+        'user_agent_is_mobile',
+        'user_agent_is_tablet',
+        'user_agent_is_touch_capable',
+        'user_agent_is_pc',
+        'user_agent_is_bot',
+
+        'user_agent_browser_family',
+        'user_agent_browser_version',
+
+        'user_agent_os_family',
+        'user_agent_os_version',
+
+        'user_agent_device_family',
+        'user_agent_device_brand',
+        'user_agent_device_model',
     )
     search_fields = (
         'id',
         'user__id',
-        'geoip_ip',
-        'geoip_country_code',
-        'geoip_country_name',
-        'geoip_area_code',
-        'geoip_city',
-        'geoip_country_code3',
-        'geoip_dma_code',
-        'geoip_latitude',
-        'geoip_longitude',
-        'geoip_postal_code',
-        'geoip_region',
-        'geoip_time_zone',
-        'geoip_geos_x',
-        'geoip_geos_y',
-        'created_dt',
+        'ip',
+
         'key',
     )
     list_filter = (
@@ -71,13 +72,16 @@ class UserAgentDeviceModelAdmin(admin.ModelAdmin):
         'user_agent_is_touch_capable',
         'user_agent_is_pc',
         'user_agent_is_bot',
-        'user_agent_browser',
+
         'user_agent_browser_family',
-        'user_agent_browser_version_string',
-        'user_agent_os',
-        'user_agent_os_version_string',
-        'user_agent_device',
+        'user_agent_browser_version',
+
+        'user_agent_os_family',
+        'user_agent_os_version',
+
         'user_agent_device_family',
+        'user_agent_device_brand',
+        'user_agent_device_model',
     )
     readonly_fields = ('id', 'created_dt', 'key',)
     fieldsets = [
@@ -85,6 +89,7 @@ class UserAgentDeviceModelAdmin(admin.ModelAdmin):
             'id',
             'user',
             'key',
+            'ip',
             'created_dt',
         ]}),
         ('UserAgent', {'fields': [
@@ -93,29 +98,16 @@ class UserAgentDeviceModelAdmin(admin.ModelAdmin):
             'user_agent_is_touch_capable',
             'user_agent_is_pc',
             'user_agent_is_bot',
-            'user_agent_browser',
+
             'user_agent_browser_family',
-            'user_agent_browser_version_string',
-            'user_agent_os',
-            'user_agent_os_version_string',
-            'user_agent_device',
+            'user_agent_browser_version',
+
+            'user_agent_os_family',
+            'user_agent_os_version',
+
             'user_agent_device_family',
-        ]}),
-        ('GeoIP', {'fields': [
-            'geoip_ip',
-            'geoip_country_code',
-            'geoip_country_name',
-            'geoip_area_code',
-            'geoip_city',
-            'geoip_country_code3',
-            'geoip_dma_code',
-            'geoip_latitude',
-            'geoip_longitude',
-            'geoip_postal_code',
-            'geoip_region',
-            'geoip_time_zone',
-            'geoip_geos_x',
-            'geoip_geos_y',
+            'user_agent_device_brand',
+            'user_agent_device_model',
         ]}),
     ]
 

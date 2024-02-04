@@ -1,19 +1,20 @@
-from django.utils.functional import SimpleLazyObject
 from gando.config import SETTINGS
 from django.utils.deprecation import MiddlewareMixin
 
 
-def _get_user_agent_device_id(key):
+def _get_user_agent_device_key(key):
     from gando.models import UserAgentDevice
 
+    if not key:
+        return None
     try:
         obj = UserAgentDevice.objects.get(key=key)
-        return obj.id
+        return obj.key
     except:
         return None
 
 
-def _create_user_agent_device_id(request):
+def _create_user_agent_device_key(request):
     from gando.models import UserAgentDevice
     from gando.utils.client import get_user_agent_device_info
 
@@ -21,7 +22,7 @@ def _create_user_agent_device_id(request):
     obj = UserAgentDevice.objects.create(
         **params
     )
-    return obj.id
+    return obj.key
 
 
 def user_agent_device_id(request):
@@ -33,15 +34,13 @@ def user_agent_device_id(request):
         return None
 
     adk = request.COOKIES.get(cookie_name)
-    if not adk:
-        return None
 
-    uad_id = _get_user_agent_device_id(adk)
-    if uad_id:
-        return uad_id
+    uad_key = _get_user_agent_device_key(adk)
+    if uad_key:
+        return uad_key
 
-    uad_id = _create_user_agent_device_id(request)
-    return uad_id
+    uad_key = _create_user_agent_device_key(request)
+    return uad_key
 
 
 class UserAgentDeviceMiddleware(MiddlewareMixin):
@@ -54,8 +53,8 @@ class UserAgentDeviceMiddleware(MiddlewareMixin):
         response.set_cookie(
             key=SETTINGS.USER_AGENT_DEVICE_HANDLER.COOKIE_NAME,
             value=request.uad,
-            max_age=100000,
-            httponly=True,
-            secure=True
+            max_age=60 * 60 * 24 * 365,
+            httponly=False,
+            secure=False
         )
         return response

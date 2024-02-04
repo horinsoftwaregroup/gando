@@ -12,33 +12,28 @@ def user_agent_device_key_creator(instance):
         f"{instance.user_agent_is_touch_capable}-"
         f"{instance.user_agent_is_pc}-"
         f"{instance.user_agent_is_bot}-"
-        f"{instance.user_agent_browser}-"
         f"{instance.user_agent_browser_family}-"
-        f"{instance.user_agent_browser_version_string}-"
-        f"{instance.user_agent_os}-"
-        f"{instance.user_agent_os_version_string}-"
-        f"{instance.user_agent_device}-"
+        f"{instance.user_agent_browser_version}-"
+        f"{instance.user_agent_os_family}-"
+        f"{instance.user_agent_os_version}-"
         f"{instance.user_agent_device_family}-"
-        f"{instance.geoip}-"
-        f"{instance.geoip_country_code}-"
-        f"{instance.geoip_country_name}-"
-        f"{instance.geoip_area_code}-"
-        f"{instance.geoip_city}-"
-        f"{instance.geoip_country_code3}-"
-        f"{instance.geoip_dma_code}-"
-        f"{instance.geoip_latitude}-"
-        f"{instance.geoip_longitude}-"
-        f"{instance.geoip_postal_code}-"
-        f"{instance.geoip_region}-"
-        f"{instance.geoip_geos_x}-"
-        f"{instance.geoip_geos_y}-"
-        f"{instance.geoip_time_zone}"
+        f"{instance.user_agent_device_brand}-"
+        f"{instance.user_agent_device_model}-"
+        f"{instance.ip}"
     )
-    ret = md5(str_.encode('utf-8'))
+    ret = str(md5(str_.encode('utf-8')).hexdigest())
     return ret
 
 
 class UserAgentDevice(models.Model):
+    key = models.CharField(
+        verbose_name=_('Key'),
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+        db_index=True,
+    )
     user = models.ForeignKey(
         verbose_name=_('User'),
         to=get_user_model(),
@@ -93,38 +88,26 @@ class UserAgentDevice(models.Model):
             (1, 'Yes'),
         ),
     )
-    user_agent_browser = models.CharField(
-        verbose_name=_('Browser'),
-        blank=True,
-        null=True,
-        max_length=255,
-    )
     user_agent_browser_family = models.CharField(
         verbose_name=_('BrowserFamily'),
         blank=True,
         null=True,
         max_length=255,
     )
-    user_agent_browser_version_string = models.CharField(
+    user_agent_browser_version = models.CharField(
         verbose_name=_('BrowserVersion'),
         blank=True,
         null=True,
         max_length=255,
     )
-    user_agent_os = models.CharField(
-        verbose_name=_('OS'),
+    user_agent_os_family = models.CharField(
+        verbose_name=_('OSFamily'),
         blank=True,
         null=True,
         max_length=255,
     )
-    user_agent_os_version_string = models.CharField(
+    user_agent_os_version = models.CharField(
         verbose_name=_('OSVersion'),
-        blank=True,
-        null=True,
-        max_length=255,
-    )
-    user_agent_device = models.CharField(
-        verbose_name=_('Device'),
         blank=True,
         null=True,
         max_length=255,
@@ -135,82 +118,21 @@ class UserAgentDevice(models.Model):
         null=True,
         max_length=255,
     )
-    # geoip
-    geoip_ip = models.CharField(
+    user_agent_device_brand = models.CharField(
+        verbose_name=_('DeviceBrand'),
+        blank=True,
+        null=True,
+        max_length=255,
+    )
+    user_agent_device_model = models.CharField(
+        verbose_name=_('DeviceModel'),
+        blank=True,
+        null=True,
+        max_length=255,
+    )
+    ip = models.CharField(
         verbose_name=_('IP'),
         max_length=255,
-        blank=True,
-        null=True,
-    )
-    geoip_country_code = models.CharField(
-        verbose_name=_('CountryCode'),
-        max_length=255,
-        blank=True,
-        null=True,
-    )
-    geoip_country_name = models.CharField(
-        verbose_name=_('CountryName'),
-        max_length=255,
-        blank=True,
-        null=True,
-    )
-    geoip_area_code = models.IntegerField(
-        verbose_name=_('AreaCode'),
-        blank=True,
-        null=True,
-    )
-    geoip_city = models.CharField(
-        verbose_name=_('City'),
-        max_length=255,
-        blank=True,
-        null=True,
-    )
-    geoip_country_code3 = models.CharField(
-        verbose_name=_('CountryCode3'),
-        max_length=255,
-        blank=True,
-        null=True,
-    )
-    geoip_dma_code = models.IntegerField(
-        verbose_name=_('DMACode'),
-        blank=True,
-        null=True,
-    )
-    geoip_latitude = models.FloatField(
-        verbose_name=_('Latitude'),
-        blank=True,
-        null=True,
-    )
-    geoip_longitude = models.FloatField(
-        verbose_name=_('Longitude'),
-        blank=True,
-        null=True,
-    )
-    geoip_postal_code = models.CharField(
-        verbose_name=_('PostalCode'),
-        max_length=255,
-        blank=True,
-        null=True,
-    )
-    geoip_region = models.CharField(
-        verbose_name=_('Region'),
-        max_length=255,
-        blank=True,
-        null=True,
-    )
-    geoip_time_zone = models.CharField(
-        verbose_name=_('TimeZone'),
-        max_length=255,
-        blank=True,
-        null=True,
-    )
-    geoip_geos_x = models.FloatField(
-        verbose_name=_('GEOS.x'),
-        blank=True,
-        null=True,
-    )
-    geoip_geos_y = models.FloatField(
-        verbose_name=_('GEOS.y'),
         blank=True,
         null=True,
     )
@@ -218,14 +140,6 @@ class UserAgentDevice(models.Model):
         verbose_name=_('Created Datetime'),
         auto_now_add=True,
         db_index=True,
-    )
-    key = models.CharField(
-        verbose_name=_('key'),
-        max_length=255,
-        blank=True,
-        null=True,
-        db_index=True,
-        unique=True,
     )
 
     def __str__(self):
