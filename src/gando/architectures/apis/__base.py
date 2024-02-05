@@ -123,7 +123,7 @@ class BaseAPI(APIView):
 
         self.set_exception_message(
             key='unexpectedError',
-            value=exc.args[0]
+            value=exc.args
         )
         self.set_error_message(
             key='unexpectedError',
