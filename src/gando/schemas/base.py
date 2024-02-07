@@ -2,7 +2,11 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class AbstractBaseSchemaModel(BaseModel):
+class AbstractBaseSchema(BaseModel):
+    pass
+
+
+class AbstractBaseSchemaModel(AbstractBaseSchema):
     id: int | None = None
     uid: str | None = None
     created_dt: datetime | None = None
