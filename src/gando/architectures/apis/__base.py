@@ -270,6 +270,13 @@ class BaseAPI(APIView):
             }
         )
 
+    def add_fail_message_to_messenger(self, message, code):
+        self.__add_to_messenger(
+            message=message,
+            code=code,
+            type_='FAIL',
+        )
+
     def add_error_message_to_messenger(self, message, code):
         self.__add_to_messenger(
             message=message,
@@ -349,7 +356,13 @@ class BaseAPI(APIView):
 
     def __fail_message_messenger(self):
         for msg in self.__messenger:
-            if msg.get('type', '') == 'FAIL':
+            if msg.get('type', '') == 'FAIL' or msg.get('type', '') == 'ERROR':
+                return True
+        return False
+
+    def __warning_message_messenger(self):
+        for msg in self.__messenger:
+            if msg.get('type', '') == 'WARNING':
                 return True
         return False
 
@@ -364,7 +377,7 @@ class BaseAPI(APIView):
         return False
 
     def __has_warning(self):
-        if len(self.__warnings_message) != 0:
+        if len(self.__warnings_message) != 0 and self.__warning_message_messenger():
             return True
         return False
 
