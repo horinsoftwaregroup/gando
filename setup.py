@@ -12,12 +12,12 @@ setuptools.setup(
     keywords='django',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/navidsoleymani/gando.git',
+    url='https://github.com/horinsoftwaregroup/gando.git',
     project_urls={
-        'Documentation': 'https://github.com/navidsoleymani/gando.git',
+        'Documentation': 'https://github.com/horinsoftwaregroup/gando.git',
         'Bug Reports':
-            'https://github.com/navidsoleymani/gando.git/issues',
-        'Source Code': 'https://github.com/navidsoleymani/gando.git',
+            'https://github.com/horinsoftwaregroup/gando.git/issues',
+        'Source Code': 'https://github.com/horinsoftwaregroup/gando.git',
     },
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),
