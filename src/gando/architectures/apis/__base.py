@@ -38,6 +38,19 @@ from rest_framework.generics import (
 )
 
 
+def _valid_user(user_id, request):
+    from django.contrib.auth import get_user_model
+
+    try:
+        obj = get_user_model().objects.get(id=request.user.id)
+        obj_id = obj.id if isinstance(obj.id, int) else str(obj.id)
+        if obj_id == user_id:
+            return True
+        return False
+    except:
+        return False
+
+
 class BaseAPI(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -735,6 +748,13 @@ class BaseAPI(APIView):
 
 class CreateAPIView(BaseAPI, DRFGCreateAPIView):
     def create(self, request, *args, **kwargs):
+        if hasattr(self, 'check_validate_user') and self.check_validate_user:
+            user_lookup_field = 'id'
+            if hasattr(self, 'user_lookup_field'):
+                user_lookup_field = self.user_lookup_field
+            if not _valid_user(request=request, user_id=kwargs.get(user_lookup_field)):
+                return Response(status=403)
+
         data = request.data.copy()
         user_field_name = 'user'
         if hasattr(self, 'user_field_name'):
@@ -755,6 +775,15 @@ class ListAPIView(BaseAPI, DRFGListAPIView):
             qs.filter(user_id=self.request.user.id)
         return qs
 
+    def get(self, request, *args, **kwargs):
+        if hasattr(self, 'check_validate_user') and self.check_validate_user:
+            user_lookup_field = 'id'
+            if hasattr(self, 'user_lookup_field'):
+                user_lookup_field = self.user_lookup_field
+            if not _valid_user(request=request, user_id=kwargs.get(user_lookup_field)):
+                return Response(status=403)
+        return super().get(request, *args, **kwargs)
+
 
 class RetrieveAPIView(BaseAPI, DRFGRetrieveAPIView):
     def get_queryset(self):
@@ -762,6 +791,15 @@ class RetrieveAPIView(BaseAPI, DRFGRetrieveAPIView):
         if hasattr(self, 'for_user') and self.for_user:
             qs.filter(user_id=self.request.user.id)
         return qs
+
+    def get(self, request, *args, **kwargs):
+        if hasattr(self, 'check_validate_user') and self.check_validate_user:
+            user_lookup_field = 'id'
+            if hasattr(self, 'user_lookup_field'):
+                user_lookup_field = self.user_lookup_field
+            if not _valid_user(request=request, user_id=kwargs.get(user_lookup_field)):
+                return Response(status=403)
+        return super().get(request, *args, **kwargs)
 
 
 class UpdateAPIView(BaseAPI, DRFGUpdateAPIView):
@@ -772,6 +810,13 @@ class UpdateAPIView(BaseAPI, DRFGUpdateAPIView):
         return qs
 
     def update(self, request, *args, **kwargs):
+        if hasattr(self, 'check_validate_user') and self.check_validate_user:
+            user_lookup_field = 'id'
+            if hasattr(self, 'user_lookup_field'):
+                user_lookup_field = self.user_lookup_field
+            if not _valid_user(request=request, user_id=kwargs.get(user_lookup_field)):
+                return Response(status=403)
+
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
 
@@ -799,3 +844,12 @@ class DestroyAPIView(BaseAPI, DRFGDestroyAPIView):
         if hasattr(self, 'for_user') and self.for_user:
             qs.filter(user_id=self.request.user.id)
         return qs
+
+    def delete(self, request, *args, **kwargs):
+        if hasattr(self, 'check_validate_user') and self.check_validate_user:
+            user_lookup_field = 'id'
+            if hasattr(self, 'user_lookup_field'):
+                user_lookup_field = self.user_lookup_field
+            if not _valid_user(request=request, user_id=kwargs.get(user_lookup_field)):
+                return Response(status=403)
+        return super().delete(request, *args, **kwargs)
