@@ -734,20 +734,68 @@ class BaseAPI(APIView):
 
 
 class CreateAPIView(BaseAPI, DRFGCreateAPIView):
-    pass
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        user_field_name = 'user'
+        if hasattr(self, 'user_field_name'):
+            user_field_name = self.user_field_name
+        data[user_field_name] = request.user.id
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class ListAPIView(BaseAPI, DRFGListAPIView):
-    pass
+    def get_queryset(self):
+        if hasattr(self, 'for_user') and self.for_user:
+            qs = super().get_queryset()
+            qs.filter(user_id=self.request.user.id)
+        return qs
 
 
 class RetrieveAPIView(BaseAPI, DRFGRetrieveAPIView):
-    pass
+    def get_queryset(self):
+        if hasattr(self, 'for_user') and self.for_user:
+            qs = super().get_queryset()
+            qs.filter(user_id=self.request.user.id)
+        return qs
 
 
 class UpdateAPIView(BaseAPI, DRFGUpdateAPIView):
-    pass
+    def get_queryset(self):
+        if hasattr(self, 'for_user') and self.for_user:
+            qs = super().get_queryset()
+            qs.filter(user_id=self.request.user.id)
+        return qs
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        data = request.data.copy()
+        user_field_name = 'user'
+        if hasattr(self, 'user_field_name'):
+            user_field_name = self.user_field_name
+        data[user_field_name] = request.user.id
+
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
 
 class DestroyAPIView(BaseAPI, DRFGDestroyAPIView):
-    pass
+    def get_queryset(self):
+        if hasattr(self, 'for_user') and self.for_user:
+            qs = super().get_queryset()
+            qs.filter(user_id=self.request.user.id)
+        return qs
