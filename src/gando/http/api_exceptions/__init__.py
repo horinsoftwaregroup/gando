@@ -13,6 +13,7 @@ class ResponseAPIMessage(APIException):
         super().__init__(detail=message, code=code)
         self.typ = typ
         self.status_code = status_code
+        self.code = code
 
 
 class DeveloperResponseAPIMessage(ResponseAPIMessage):
