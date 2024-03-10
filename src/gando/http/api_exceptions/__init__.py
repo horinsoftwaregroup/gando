@@ -14,6 +14,7 @@ class ResponseAPIMessage(APIException):
         self.typ = typ
         self.status_code = status_code
         self.code = code
+        self.message = message
 
 
 class DeveloperResponseAPIMessage(ResponseAPIMessage):
