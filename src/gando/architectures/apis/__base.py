@@ -36,6 +36,17 @@ from rest_framework.generics import (
     UpdateAPIView as DRFGUpdateAPIView,
     DestroyAPIView as DRFGDestroyAPIView,
 )
+from gando.http.api_exceptions import (
+    EnduserResponseAPIMessage,
+    DeveloperResponseAPIMessage,
+
+    DeveloperExceptionResponseAPIMessage,
+    DeveloperErrorResponseAPIMessage,
+    DeveloperWarningResponseAPIMessage,
+    EnduserFailResponseAPIMessage,
+    EnduserErrorResponseAPIMessage,
+    EnduserWarningResponseAPIMessage,
+)
 
 
 def _valid_user(user_id, request):
@@ -108,6 +119,33 @@ class BaseAPI(APIView):
         return ret
 
     def handle_exception(self, exc):
+
+        if issubclass(exc, DeveloperResponseAPIMessage):
+            if issubclass(exc, DeveloperErrorResponseAPIMessage):
+                self.set_status_code(exc.status_code)
+                self.set_error_message(key=exc.code, value=exc.detail)
+
+            elif issubclass(exc, DeveloperExceptionResponseAPIMessage):
+                self.set_status_code(exc.status_code)
+                self.set_exception_message(key=exc.code, value=exc.detail)
+
+            elif issubclass(exc, DeveloperWarningResponseAPIMessage):
+                self.set_status_code(exc.status_code)
+                self.set_warning_message(key=exc.code, value=exc.detail)
+
+        if issubclass(exc, EnduserResponseAPIMessage):
+            if issubclass(exc, EnduserErrorResponseAPIMessage):
+                self.set_status_code(exc.status_code)
+                self.add_error_message_to_messenger(code=exc.code, message=exc.detail)
+
+            elif issubclass(exc, EnduserFailResponseAPIMessage):
+                self.set_status_code(exc.status_code)
+                self.add_fail_message_to_messenger(code=exc.code, message=exc.detail)
+
+            elif issubclass(exc, EnduserWarningResponseAPIMessage):
+                self.set_status_code(exc.status_code)
+                self.add_warning_message_to_messenger(code=exc.code, message=exc.detail)
+
         if SETTINGS.EXCEPTION_HANDLER.HANDLING:
             return self._handle_exception_gando_handling_true(exc)
         return self._handle_exception_gando_handling_false(exc)
