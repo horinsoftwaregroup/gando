@@ -87,6 +87,57 @@ class DeveloperWarningResponseAPIMessageBadRequest(DeveloperWarningResponseAPIMe
         )
 
 
+class DeveloperExceptionResponseAPIMessageForbidden403(DeveloperExceptionResponseAPIMessage):
+    def __init__(
+        self,
+        message="You do not have permission to access this resource. "
+                "Please do not try again, "
+                "or if you doubt the authenticity of the requested permissions, "
+                "try again after checking the authenticity of the permissions.",
+        code='forbidden',
+    ):
+        super().__init__(
+            message=message,
+            code=code,
+            typ=DEVELOPER_EXCEPTION,
+            status_code=403,
+        )
+
+
+class DeveloperErrorResponseAPIMessageForbidden403(DeveloperErrorResponseAPIMessage):
+    def __init__(
+        self,
+        message="You do not have permission to access this resource. "
+                "Please do not try again, "
+                "or if you doubt the authenticity of the requested permissions, "
+                "try again after checking the authenticity of the permissions.",
+        code='forbidden',
+    ):
+        super().__init__(
+            message=message,
+            code=code,
+            typ=DEVELOPER_ERROR,
+            status_code=403,
+        )
+
+
+class DeveloperWarningResponseAPIMessageForbidden403(DeveloperWarningResponseAPIMessage):
+    def __init__(
+        self,
+        message="You do not have permission to access this resource. "
+                "Please do not try again, "
+                "or if you doubt the authenticity of the requested permissions, "
+                "try again after checking the authenticity of the permissions.",
+        code='forbidden',
+    ):
+        super().__init__(
+            message=message,
+            code=code,
+            typ=DEVELOPER_WARNING,
+            status_code=403,
+        )
+
+
 class EnduserResponseAPIMessage(ResponseAPIMessage):
     def __init__(self, message=None, code=None, typ=None, status_code=None):
         super().__init__(
@@ -154,4 +205,46 @@ class EnduserWarningResponseAPIMessageBadRequest(EnduserWarningResponseAPIMessag
             code=code,
             typ=ENDUSER_WARNING,
             status_code=400,
+        )
+
+
+class EnduserFailResponseAPIMessageForbidden403(EnduserFailResponseAPIMessage):
+    def __init__(
+        self,
+        message='You do not have permission to access this resource. Please do not try again.',
+        code='forbidden',
+    ):
+        super().__init__(
+            message=message,
+            code=code,
+            typ=ENDUSER_FAIL,
+            status_code=403,
+        )
+
+
+class EnduserErrorResponseAPIMessageForbidden403(EnduserErrorResponseAPIMessage):
+    def __init__(
+        self,
+        message='You do not have permission to access this resource. Please do not try again.',
+        code='forbidden',
+    ):
+        super().__init__(
+            message=message,
+            code=code,
+            typ=ENDUSER_ERROR,
+            status_code=403,
+        )
+
+
+class EnduserWarningResponseAPIMessageForbidden403(EnduserWarningResponseAPIMessage):
+    def __init__(
+        self,
+        message='You do not have permission to access this resource. Please do not try again.',
+        code='forbidden',
+    ):
+        super().__init__(
+            message=message,
+            code=code,
+            typ=ENDUSER_WARNING,
+            status_code=403,
         )
