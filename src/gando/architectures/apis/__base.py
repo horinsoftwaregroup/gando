@@ -723,8 +723,8 @@ class BaseAPI(APIView):
             tmp = []
             for i in data:
                 rslt = self.__set_messages_from_data(i)
-                if rslt:
-                    tmp.append(rslt)
+                # if rslt:
+                tmp.append(rslt)
 
             ret = tmp
             return ret
@@ -733,8 +733,8 @@ class BaseAPI(APIView):
             tmp = {}
             for k, v in data.items():
                 rslt = self.__set_messages_from_data(v)
-                if rslt is not None:
-                    tmp[k] = v
+                # if rslt is not None:
+                tmp[k] = v
 
             ret = tmp
             return ret
