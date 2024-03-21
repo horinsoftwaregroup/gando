@@ -1,5 +1,6 @@
 from rest_framework.serializers import OrderedDict
 from rest_framework.serializers import ModelSerializer
+from uuid import UUID
 
 
 class DRFBaseModelSerializer(ModelSerializer):
@@ -12,6 +13,8 @@ class DRFBaseModelSerializer(ModelSerializer):
                 for k, v in i.items():
                     if isinstance(v, OrderedDict):
                         tmp__[k] = dict(v)
+                    elif isinstance(v, UUID):
+                        tmp__[k] = str(v)
                     else:
                         tmp__[k] = v
                 tmp_.append(tmp__)
@@ -24,6 +27,8 @@ class DRFBaseModelSerializer(ModelSerializer):
             for k, v in tmp.items():
                 if isinstance(v, OrderedDict):
                     tmp_[k] = dict(v)
+                elif isinstance(v, UUID):
+                    tmp_[k] = str(v)
                 else:
                     tmp_[k] = v
 
@@ -35,6 +40,8 @@ class DRFBaseModelSerializer(ModelSerializer):
             for k, v in tmp.items():
                 if isinstance(v, OrderedDict):
                     tmp_[k] = dict(v)
+                elif isinstance(v, UUID):
+                    tmp_[k] = str(v)
                 else:
                     tmp_[k] = v
 
