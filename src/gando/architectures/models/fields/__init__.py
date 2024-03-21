@@ -284,10 +284,10 @@ class PhoneNumberField(models.CharField):
 
 @deconstructible
 class UnicodeUsernameValidator(validators.RegexValidator):
-    regex = r"^([0-9a-zA-Z_]){3,127}$"
+    regex = r"^([0-9a-zA-Z_+]){3,127}$"
     message = _(
         "Enter a valid username. This value may contain only letters, "
-        "numbers, and underline(_) character."
+        "numbers, and _,+ character."
     )
     flags = 0
 
