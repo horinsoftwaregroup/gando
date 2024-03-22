@@ -3,6 +3,18 @@ import uuid
 
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django.db.models.manager import BaseManager as DjBaseManager, QuerySet
+
+
+class BaseManager(DjBaseManager):
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset.filter(available=True)
+        return queryset
+
+
+class Manager(BaseManager.from_queryset(QuerySet)):
+    pass
 
 
 class AbstractBaseModel(models.Model):
@@ -35,7 +47,7 @@ class AbstractBaseModel(models.Model):
         ),
         db_index=True,
     )
-
+    objects = Manager()
     history = HistoricalRecords(inherit=True)
 
     class Meta:
