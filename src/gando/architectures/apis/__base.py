@@ -890,4 +890,16 @@ class DestroyAPIView(BaseAPI, DRFGDestroyAPIView):
                 user_lookup_field = self.user_lookup_field
             if not _valid_user(request=request, user_id=kwargs.get(user_lookup_field)):
                 return Response(status=403)
-        return super().delete(request, *args, **kwargs)
+        return self.destroy(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance=instance, soft_delete=kwargs.get('soft_delete', False))
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance, soft_delete=False):
+        if soft_delete:
+            instance.available = 0
+            instance.save()
+        else:
+            instance.delete()
