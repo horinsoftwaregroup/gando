@@ -9,7 +9,7 @@ from django.db.models.manager import BaseManager as DjBaseManager, QuerySet
 class BaseManager(DjBaseManager):
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset.filter(available=True)
+        queryset = queryset.filter(available=True)
         return queryset
 
 
@@ -47,7 +47,6 @@ class AbstractBaseModel(models.Model):
         ),
         db_index=True,
     )
-    objects = Manager()
     history = HistoricalRecords(inherit=True)
 
     class Meta:
