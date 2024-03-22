@@ -898,6 +898,9 @@ class DestroyAPIView(BaseAPI, DRFGDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_destroy(self, instance, soft_delete=False):
+        if instance is None:
+            return
+
         if soft_delete:
             instance.available = 0
             instance.save()
