@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 
 def verbose_name(value: str):
@@ -140,10 +141,10 @@ class BaseModelAdmin(admin.ModelAdmin):
 
     @fieldsets.setter
     def fieldsets(self, value):
-        tmp = [('Initial', {'fields': [('available', 'id',)]})]
+        tmp = [(_('Initial'), {'fields': [('available', 'id',)]})]
         tmp += value
         tmp += self.__set_image_fieldsets()
-        tmp += [('Extra', {'fields': [('created_dt', 'updated_dt',)]})]
+        tmp += [(_('Extra'), {'fields': [('created_dt', 'updated_dt',)]})]
 
         self._fieldsets = tmp
 
