@@ -20,6 +20,7 @@ class RequestSchema(BaseModel):
     method: str = GET
     data: dict = {}
     cookies: dict = {}
+    headers: dict = {}
     sch: Any
 
 
@@ -60,7 +61,8 @@ class AsyncoRequestManager:
     def __reset_incomplete_requests(self):
         self.__incomplete_requests = self.__incomplete_requests_temporary.copy()
 
-    def add_to_requests(self, url, method=None, data=None, cookies=None, schema=None):
+    def add_to_requests(
+        self, url, method=None, data=None, headers=None, cookies=None, schema=None):
         idx = self.__request_id_counter
 
         req = RequestSchema(
@@ -69,6 +71,7 @@ class AsyncoRequestManager:
             method=method or GET,
             data=data or {},
             cookies=cookies or {},
+            headers=headers or {},
             sch=schema,
         )
 
@@ -101,13 +104,20 @@ class AsyncoRequestManager:
         ret = False
         try:
             if request.method.upper() == GET:
-                rsp = await client.get(request.url, cookies=request.cookies or {})
+                rsp = await client.get(
+                    request.url,
+                    cookies=request.cookies or {},
+                    headers=request.headers or {}
+                )
                 self.__add_to_responses(request=request, _response=rsp)
                 ret = True
 
             elif request.method.upper() == POST:
                 rsp = await client.post(
-                    request.url, data=request.data, cookies=request.cookies or {}
+                    request.url,
+                    data=request.data,
+                    cookies=request.cookies or {},
+                    headers=request.headers or {},
                 )
                 self.__add_to_responses(request=request, _response=rsp)
                 ret = True
