@@ -3,7 +3,7 @@ import uuid
 
 from django.utils.translation import gettext_lazy as _
 from django.db import models
-from django.db.models.manager import BaseManager as DjBaseManager, QuerySet
+from django.db.models import Manager as DjBaseManager, QuerySet
 
 
 class BaseManager(DjBaseManager):
