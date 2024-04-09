@@ -1,4 +1,4 @@
-from rest_framework.serializers import OrderedDict
+from typing import OrderedDict
 from rest_framework.serializers import ModelSerializer as DRFModelSerializer
 
 
