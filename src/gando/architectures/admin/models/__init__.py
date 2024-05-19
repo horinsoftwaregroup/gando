@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from import_export.admin import ImportExportMixin
 
 
 def verbose_name(value: str):
@@ -17,7 +18,7 @@ def verbose_name(value: str):
     return ret
 
 
-class BaseModelAdmin(admin.ModelAdmin):
+class BaseModelAdmin(ImportExportMixin, admin.ModelAdmin):
 
     def __init__(self, *args, **kwargs):
         # Display Management
