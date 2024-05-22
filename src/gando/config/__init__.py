@@ -18,11 +18,11 @@ class Gando(Base):
     MONITOR_KEYS: list = list()
     DEBUG: bool = True
     CACHING: bool = False
-    MESSAGES_RESPONSE_DISPLAYED: bool = True
     MONITOR: dict = dict()
     EXCEPTION_HANDLER: ExceptionHandlerObject = ExceptionHandlerObject()
     PASTE_TO_REQUEST: dict = dict()
     USER_AGENT_DEVICE_HANDLER: UserAgentDeviceHandlerObject = UserAgentDeviceHandlerObject()
+    DEVELOPMENT_STATE = True
 
 
 @lru_cache()

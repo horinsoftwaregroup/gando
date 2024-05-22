@@ -294,7 +294,6 @@ class BaseAPI(APIView):
             'status_code': status_code,
 
             'has_warning': has_warning,
-            'exception_status': exception_status,
 
             'monitor': self.monitor_play(monitor),
 
@@ -303,10 +302,8 @@ class BaseAPI(APIView):
             'many': many,
             'data': data,
         }
-        if self.__debug_status:
-            # tmp['headers'] = headers
-            pass
-        if self.__messages_response_displayed:
+        if self.__development_state:
+            tmp['exception_status'] = exception_status
             tmp['development_messages'] = messages
 
         ret = tmp
@@ -523,8 +520,8 @@ class BaseAPI(APIView):
         return SETTINGS.DEBUG
 
     @property
-    def __messages_response_displayed(self):
-        return SETTINGS.MESSAGES_RESPONSE_DISPLAYED
+    def __development_state(self):
+        return SETTINGS.DEVELOPMENT_STATE
 
     def response(self, output_data=None):
         data = output_data
