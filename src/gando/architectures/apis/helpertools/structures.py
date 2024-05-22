@@ -6,6 +6,34 @@ class AllowedMethod:
     DELETE = 'DELETE'
 
 
+class FieldType:
+    STRING = 'String'
+    CHARACTER = 'Character'
+    TEXT = 'Text'
+    INTEGER = 'Integer'
+    FLOAT = 'Float'
+    POSITIVE_INTEGER = 'PositiveInteger'
+    NEGATIVE_INTEGER = 'NegativeInteger'
+    POSITIVE_FLOAT = 'PositiveFloat'
+    NEGATIVE_FLOAT = 'NegativeFloat'
+    DATE = 'Date'
+    DATETIME = 'DateTime'
+    TIME = 'Time'
+    FILE = 'File'
+    IMAGE = 'Image'
+    ID = 'ID'
+    UUID = 'UUID'
+    LIST = 'List'
+    DICTIONARY = 'Dictionary'
+    BOOLEAN = 'Boolean'
+    UNKNOWN = 'Unknown'
+
+
+class PresentmentType:
+    OPTIONAL = 'Optional'
+    REQUIRED = 'Required'
+
+
 class Helper:
     def __init__(
         self,
@@ -73,35 +101,10 @@ class Helper:
 
 
 class BaseField:
-    STRING = 'String'
-    CHARACTER = 'Character'
-    TEXT = 'Text'
-    INTEGER = 'Integer'
-    FLOAT = 'Float'
-    POSITIVE_INTEGER = 'PositiveInteger'
-    NEGATIVE_INTEGER = 'NegativeInteger'
-    POSITIVE_FLOAT = 'PositiveFloat'
-    NEGATIVE_FLOAT = 'NegativeFloat'
-    DATE = 'Date'
-    DATETIME = 'DateTime'
-    TIME = 'Time'
-    FILE = 'File'
-    IMAGE = 'Image'
-    ID = 'ID'
-    UUID = 'UUID'
-    LIST = 'List'
-    DICTIONARY = 'Dictionary'
-    BOOLEAN = 'Boolean'
-
-    OPTIONAL = 'Optional'
-    REQUIRED = 'Required'
-
-    UNKNOWN = 'Unknown'
-
     def __init__(self, **kwargs):
-        self.typ = kwargs.get('typ', self.UNKNOWN)
+        self.typ = kwargs.get('typ', FieldType.UNKNOWN)
 
-        self.presentment = kwargs.get('presentment', self.OPTIONAL)
+        self.presentment = kwargs.get('presentment', PresentmentType.OPTIONAL)
 
         self.min_length = kwargs.get('min_length')
         self.max_length = kwargs.get('max_length')
@@ -146,7 +149,7 @@ class BaseField:
 
 class StringField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.STRING
+        kwargs['typ'] = FieldType.STRING
         super().__init__(**kwargs)
 
 
@@ -173,65 +176,65 @@ class EmailField(StringField):
 
 class DateField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.DATE
+        kwargs['typ'] = FieldType.DATE
         super().__init__(**kwargs)
 
 
 class TimeField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.TIME
+        kwargs['typ'] = FieldType.TIME
         super().__init__(**kwargs)
 
 
 class DateTimeField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.DATETIME
+        kwargs['typ'] = FieldType.DATETIME
         super().__init__(**kwargs)
 
 
 class IntegerField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.INTEGER
+        kwargs['typ'] = FieldType.INTEGER
         super().__init__(**kwargs)
 
 
 class FloatField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.FLOAT
+        kwargs['typ'] = FieldType.FLOAT
         super().__init__(**kwargs)
 
 
 class FileField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.FILE
+        kwargs['typ'] = FieldType.FILE
         super().__init__(**kwargs)
 
 
 class ImageField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.IMAGE
+        kwargs['typ'] = FieldType.IMAGE
         super().__init__(**kwargs)
 
 
 class UUIDField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.UUID
+        kwargs['typ'] = FieldType.UUID
         super().__init__(**kwargs)
 
 
 class IDField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.ID
+        kwargs['typ'] = FieldType.ID
         super().__init__(**kwargs)
 
 
 class ListField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.LIST
+        kwargs['typ'] = FieldType.LIST
         super().__init__(**kwargs)
 
 
 class DictionaryField(BaseField):
     def __init__(self, **kwargs):
-        kwargs['typ'] = self.DICTIONARY
+        kwargs['typ'] = FieldType.DICTIONARY
         super().__init__(**kwargs)
