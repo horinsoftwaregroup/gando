@@ -11,6 +11,58 @@ class Helper:
         self.query_params = query_params or {}
         self.expected_response_data_fields = expected_response_data_fields or {}
 
+    _allowed_methods = None
+
+    @property
+    def allowed_methods(self):
+        return {
+            'key': 'allowed_methods',
+            'value': self._allowed_methods,
+        }
+
+    @allowed_methods.setter
+    def allowed_methods(self, value):
+        self._allowed_methods = value
+
+    _request_fields = None
+
+    @property
+    def request_fields(self):
+        return {
+            'key': 'request_fields',
+            'value': self._request_fields,
+        }
+
+    @request_fields.setter
+    def request_fields(self, value):
+        self._request_fields = value
+
+    _query_params = None
+
+    @property
+    def query_params(self):
+        return {
+            'key': 'query_params',
+            'value': self._query_params,
+        }
+
+    @query_params.setter
+    def query_params(self, value):
+        self._query_params = value
+
+    _expected_response_data_fields = None
+
+    @property
+    def expected_response_data_fields(self):
+        return {
+            'key': 'expected_response_data_fields',
+            'value': self._expected_response_data_fields,
+        }
+
+    @expected_response_data_fields.setter
+    def expected_response_data_fields(self, value):
+        self._expected_response_data_fields = value
+
 
 class BaseField:
     STRING = 'String'
