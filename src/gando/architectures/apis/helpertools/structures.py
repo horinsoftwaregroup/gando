@@ -40,12 +40,16 @@ class Helper:
         allowed_methods: list = None,
         request_fields: dict = None,
         query_params: dict = None,
-        expected_response_data_fields: dict = None
+        expected_response_data_fields: dict = None,
+        headers_keys: dict = None,
+        cookies_keys: dict = None,
     ):
         self.allowed_methods = allowed_methods or []
         self.request_fields = request_fields or {}
         self.query_params = query_params or {}
         self.expected_response_data_fields = expected_response_data_fields or {}
+        self.headers_keys = headers_keys or {}
+        self.cookies_keys = cookies_keys or {}
 
     _allowed_methods = None
 
@@ -98,6 +102,32 @@ class Helper:
     @expected_response_data_fields.setter
     def expected_response_data_fields(self, value):
         self._expected_response_data_fields = value
+
+    _headers_keys = None
+
+    @property
+    def headers_keys(self):
+        return {
+            'key': 'headers_keys',
+            'value': self._headers_keys,
+        }
+
+    @headers_keys.setter
+    def headers_keys(self, value):
+        self._headers_keys = value
+
+    _cookies_keys = None
+
+    @property
+    def cookies_keys(self):
+        return {
+            'key': 'cookies_keys',
+            'value': self._cookies_keys,
+        }
+
+    @cookies_keys.setter
+    def cookies_keys(self, value):
+        self._cookies_keys = value
 
 
 class BaseField:
