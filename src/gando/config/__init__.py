@@ -22,7 +22,7 @@ class Gando(Base):
     EXCEPTION_HANDLER: ExceptionHandlerObject = ExceptionHandlerObject()
     PASTE_TO_REQUEST: dict = dict()
     USER_AGENT_DEVICE_HANDLER: UserAgentDeviceHandlerObject = UserAgentDeviceHandlerObject()
-    DEVELOPMENT_STATE = True
+    DEVELOPMENT_STATE: bool = True
 
 
 @lru_cache()
