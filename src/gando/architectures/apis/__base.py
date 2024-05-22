@@ -189,16 +189,17 @@ class BaseAPI(APIView):
 
         return None
 
-    def _exception_handler_messages(self, msg):
+    def _exception_handler_messages(self, msg, base_key=None):
         if isinstance(msg, list):
             for e in msg:
                 self._exception_handler_messages(e)
         elif isinstance(msg, dict):
-            for _, v in msg.items():
-                self._exception_handler_messages(v)
+            for k, v in msg.items():
+                self._exception_handler_messages(v, base_key=k)
         else:
-            self.add_fail_message_to_messenger(
-                code=msg.code if hasattr(msg, 'code') else 'e', message=str(msg))
+            key = msg.code if hasattr(msg, 'code') else 'e'
+            key = base_key + '__' + key if base_key else key
+            self.set_error_message(key=key, value=str(msg))
 
     def _handle_exception_gando_handling_true(self, exc):
         """
