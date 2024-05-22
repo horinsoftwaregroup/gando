@@ -1,8 +1,36 @@
-from inspect import currentframe, getframeinfo
-from pydantic import BaseModel
-from typing import Any
 import importlib
+from inspect import currentframe, getframeinfo
+from typing import Any
 
+from django.core.exceptions import PermissionDenied
+from django.db import connections
+from django.http import Http404
+from pydantic import BaseModel
+from rest_framework import exceptions
+from rest_framework import status
+from rest_framework.exceptions import ErrorDetail
+from rest_framework.generics import (
+    CreateAPIView as DRFGCreateAPIView,
+    ListAPIView as DRFGListAPIView,
+    RetrieveAPIView as DRFGRetrieveAPIView,
+    UpdateAPIView as DRFGUpdateAPIView,
+    DestroyAPIView as DRFGDestroyAPIView,
+)
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from gando.config import SETTINGS
+from gando.http.api_exceptions import (
+    EnduserResponseAPIMessage,
+    DeveloperResponseAPIMessage,
+
+    DeveloperExceptionResponseAPIMessage,
+    DeveloperErrorResponseAPIMessage,
+    DeveloperWarningResponseAPIMessage,
+    EnduserFailResponseAPIMessage,
+    EnduserErrorResponseAPIMessage,
+    EnduserWarningResponseAPIMessage,
+)
 from gando.http.responses.string_messages import (
     InfoStringMessage,
     ErrorStringMessage,
@@ -23,30 +51,6 @@ from gando.utils.messages import (
     DefaultResponse421FailMessage,
     DefaultResponse500FailMessage,
 )
-from gando.config import SETTINGS
-
-from rest_framework.exceptions import ErrorDetail
-from rest_framework import exceptions, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.generics import (
-    CreateAPIView as DRFGCreateAPIView,
-    ListAPIView as DRFGListAPIView,
-    RetrieveAPIView as DRFGRetrieveAPIView,
-    UpdateAPIView as DRFGUpdateAPIView,
-    DestroyAPIView as DRFGDestroyAPIView,
-)
-from gando.http.api_exceptions import (
-    EnduserResponseAPIMessage,
-    DeveloperResponseAPIMessage,
-
-    DeveloperExceptionResponseAPIMessage,
-    DeveloperErrorResponseAPIMessage,
-    DeveloperWarningResponseAPIMessage,
-    EnduserFailResponseAPIMessage,
-    EnduserErrorResponseAPIMessage,
-    EnduserWarningResponseAPIMessage,
-)
 
 
 def _valid_user(user_id, request):
@@ -58,8 +62,14 @@ def _valid_user(user_id, request):
         if obj_id == user_id:
             return True
         return False
-    except:
+    except Exception as exc:
         return False
+
+
+def set_rollback():
+    for db in connections.all():
+        if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
+            db.set_rollback(True)
 
 
 class BaseAPI(APIView):
@@ -150,6 +160,38 @@ class BaseAPI(APIView):
             return self._handle_exception_gando_handling_true(exc)
         return self._handle_exception_gando_handling_false(exc)
 
+    def exception_handler(self, exc, context):
+        """
+        Returns the response that should be used for any given exception.
+
+        By default, we handle the REST framework `APIException`, and also
+        Django's built-in `Http404` and `PermissionDenied` exceptions.
+
+        Any unhandled exceptions may return `None`, which will cause a 500 error
+        to be raised.
+        """
+        if isinstance(exc, Http404):
+            exc = exceptions.NotFound(*(exc.args))
+        elif isinstance(exc, PermissionDenied):
+            exc = exceptions.PermissionDenied(*(exc.args))
+
+        if isinstance(exc, exceptions.APIException):
+            headers = {}
+            if getattr(exc, 'auth_header', None):
+                headers['WWW-Authenticate'] = exc.auth_header
+            if getattr(exc, 'wait', None):
+                headers['Retry-After'] = '%d' % exc.wait
+
+            if isinstance(exc.detail, (list, dict)):
+                data = str(exc.detail)
+            else:
+                data = exc.detail
+
+            set_rollback()
+            return Response(data, status=exc.status_code, headers=headers)
+
+        return None
+
     def _handle_exception_gando_handling_true(self, exc):
         """
         Handle any exception that occurs, by returning an appropriate response,
@@ -164,10 +206,8 @@ class BaseAPI(APIView):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        exception_handler = self.get_exception_handler()
-
         context = self.get_exception_handler_context()
-        response = exception_handler(exc, context)
+        response = self.exception_handler(exc, context)
 
         if response is None:
             response = Response()
@@ -217,10 +257,8 @@ class BaseAPI(APIView):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        exception_handler = self.get_exception_handler()
-
         context = self.get_exception_handler_context()
-        response = exception_handler(exc, context)
+        response = self.exception_handler(exc, context)
 
         if response is None:
             self.raise_uncaught_exception(exc)
