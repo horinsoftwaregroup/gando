@@ -48,8 +48,8 @@ class Helper:
         self.request_fields = request_fields or {}
         self.query_params = query_params or {}
         self.expected_response_data_fields = expected_response_data_fields or {}
-        self.headers_keys = headers_keys or {}
-        self.cookies_keys = cookies_keys or {}
+        self.headers_keys = headers_keys or []
+        self.cookies_keys = cookies_keys or []
 
     _allowed_methods = None
 
@@ -70,7 +70,7 @@ class Helper:
     def request_fields(self):
         return {
             'key': 'request_fields',
-            'value': self._request_fields,
+            'value': self._request_fields.todict(),
         }
 
     @request_fields.setter
@@ -83,7 +83,7 @@ class Helper:
     def query_params(self):
         return {
             'key': 'query_params',
-            'value': self._query_params,
+            'value': self._query_params.todict(),
         }
 
     @query_params.setter
@@ -96,7 +96,7 @@ class Helper:
     def expected_response_data_fields(self):
         return {
             'key': 'expected_response_data_fields',
-            'value': self._expected_response_data_fields,
+            'value': self._expected_response_data_fields.todict(),
         }
 
     @expected_response_data_fields.setter
