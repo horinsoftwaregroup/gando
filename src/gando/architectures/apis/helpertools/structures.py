@@ -68,9 +68,12 @@ class Helper:
 
     @property
     def request_fields(self):
+        value = {}
+        for k, v in self._request_fields.items():
+            value[k] = v.todict()
         return {
             'key': 'request_fields',
-            'value': self._request_fields.todict(),
+            'value': value,
         }
 
     @request_fields.setter
@@ -94,9 +97,12 @@ class Helper:
 
     @property
     def expected_response_data_fields(self):
+        value = {}
+        for k, v in self._expected_response_data_fields.items():
+            value[k] = v.todict()
         return {
             'key': 'expected_response_data_fields',
-            'value': self._expected_response_data_fields.todict(),
+            'value': value,
         }
 
     @expected_response_data_fields.setter
@@ -206,8 +212,6 @@ class PasswordField(StringField):
 
 class EmailField(StringField):
     def __init__(self, **kwargs):
-        kwargs['min_length'] = 8
-        kwargs['max_length'] = 31
         super().__init__(**kwargs)
 
 
