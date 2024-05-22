@@ -858,7 +858,7 @@ class ListAPIView(BaseAPI, DRFGListAPIView):
     def get_queryset(self):
         qs = super().get_queryset()
         if hasattr(self, 'for_user') and self.for_user:
-            qs.filter(user_id=self.request.user.id)
+            qs = qs.filter(user_id=self.request.user.id)
         return qs
 
     def get(self, request, *args, **kwargs):
@@ -875,7 +875,7 @@ class RetrieveAPIView(BaseAPI, DRFGRetrieveAPIView):
     def get_queryset(self):
         qs = super().get_queryset()
         if hasattr(self, 'for_user') and self.for_user:
-            qs.filter(user_id=self.request.user.id)
+            qs = qs.filter(user_id=self.request.user.id)
         return qs
 
     def get(self, request, *args, **kwargs):
@@ -892,7 +892,7 @@ class UpdateAPIView(BaseAPI, DRFGUpdateAPIView):
     def get_queryset(self):
         qs = super().get_queryset()
         if hasattr(self, 'for_user') and self.for_user:
-            qs.filter(user_id=self.request.user.id)
+            qs = qs.filter(user_id=self.request.user.id)
         return qs
 
     def update(self, request, *args, **kwargs):
@@ -928,7 +928,7 @@ class DestroyAPIView(BaseAPI, DRFGDestroyAPIView):
     def get_queryset(self):
         qs = super().get_queryset()
         if hasattr(self, 'for_user') and self.for_user:
-            qs.filter(user_id=self.request.user.id)
+            qs = qs.filter(user_id=self.request.user.id)
         return qs
 
     def delete(self, request, *args, **kwargs):
