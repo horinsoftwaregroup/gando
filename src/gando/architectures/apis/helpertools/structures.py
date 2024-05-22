@@ -149,6 +149,9 @@ class BaseField:
         self.allowed_file_format = kwargs.get('allowed_file_format')
         self.allowed_image_format = kwargs.get('allowed_image_format')
 
+        self.item = kwargs.get('item')
+        self.value = kwargs.get('value')
+
     def todict(self):
         ret = {}
         if self.typ:
@@ -173,6 +176,10 @@ class BaseField:
             ret['allowed_file_format'] = self.allowed_file_format
         if self.allowed_image_format:
             ret['allowed_image_format'] = self.allowed_image_format
+        if self.item:
+            ret['item'] = self.item.todict()
+        if self.value:
+            ret['value'] = self.value.todict()
 
         return ret
 
