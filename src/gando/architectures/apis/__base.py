@@ -182,15 +182,23 @@ class BaseAPI(APIView):
             if getattr(exc, 'wait', None):
                 headers['Retry-After'] = '%d' % exc.wait
 
-            if isinstance(exc.detail, (list, dict)):
-                data = str(exc.detail)
-            else:
-                data = exc.detail
+            self._exception_handler_messages(exc.detail)
 
             set_rollback()
-            return Response(data, status=exc.status_code, headers=headers)
+            return Response(status=exc.status_code, headers=headers)
 
         return None
+
+    def _exception_handler_messages(self, msg):
+        if isinstance(msg, list):
+            for e in msg:
+                self._exception_handler_messages(e)
+        elif isinstance(msg, dict):
+            for _, v in msg.items():
+                self._exception_handler_messages(v)
+        else:
+            self.add_fail_message_to_messenger(
+                code=msg.code if hasattr(msg, 'code') else 'e', message=str(msg))
 
     def _handle_exception_gando_handling_true(self, exc):
         """
