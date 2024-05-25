@@ -41,6 +41,7 @@ class BaseModelAdmin(admin.ModelAdmin):
 
         # Readonly Fields Management
         self.id_field_is_readonly = True
+        self.available_field_is_readonly = True
         self.created_dt_field_is_readonly = True
         self.updated_dt_field_is_readonly = True
         self.readonly_fields = [] if not self.readonly_fields else self.readonly_fields
@@ -161,6 +162,10 @@ class BaseModelAdmin(admin.ModelAdmin):
             self.id_field_is_readonly
             if hasattr(self, 'id_field_is_readonly') else False
         )
+        available_field_is_readonly = (
+            self.available_field_is_readonly
+            if hasattr(self, 'available_field_is_readonly') else False
+        )
         created_dt_field_is_readonly = (
             self.created_dt_field_is_readonly
             if hasattr(self, 'created_dt_field_is_readonly') else False
@@ -173,6 +178,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         tmp = ['id'] if 'id' not in value and id_field_is_readonly else []
         tmp += value
         tmp += self.__get_image_read_only_fields()
+        tmp += ['available'] if 'available' not in value and available_field_is_readonly else []
         tmp += ['created_dt'] if 'created_dt' not in value and created_dt_field_is_readonly else []
         tmp += ['updated_dt'] if 'updated_dt' not in value and updated_dt_field_is_readonly else []
 
