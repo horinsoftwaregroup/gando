@@ -97,6 +97,8 @@ class BaseAPI(APIView):
         self.__content_type: str | None = None
         self.__exception_status: bool = False
 
+        self.response_schema_version = self.request.headers.get('Response-Schema-Version') or '1.0.0'
+
     def __paste_to_request_func_loader(self, f, request, *args, **kwargs):
         try:
             mod_name, func_name = f.rsplit('.', 1)
@@ -317,6 +319,11 @@ class BaseAPI(APIView):
         return super().finalize_response(request, response, *args, **kwargs)
 
     def response_context(self, data=None):
+        if self.response_schema_version == '2.0.0':
+            return self._response_context_v_2_0_0_response(data)
+        return self._response_context_v_1_0_0_response(data)
+
+    def _response_context_v_1_0_0_response(self, data=None):
         self.__data = self.__set_messages_from_data(data)
 
         status_code = self.get_status_code()
@@ -351,6 +358,41 @@ class BaseAPI(APIView):
         }
         if self.__development_state:
             tmp['exception_status'] = exception_status
+            tmp['development_messages'] = messages
+
+        ret = tmp
+        return ret
+
+    def _response_context_v_2_0_0_response(self, data=None):
+        self.__data = self.__set_messages_from_data(data)
+
+        status_code = self.get_status_code()
+        content_type = self.get_content_type()
+        data = self.validate_data()
+        many = self.__many()
+
+        monitor = self.__monitor
+
+        has_warning = self.__has_warning()
+        exception_status = self.get_exception_status()
+
+        messages = self.__messages()
+
+        success = self.__success()
+
+        headers = self.get_headers()
+
+        tmp = {
+            'success': success,
+
+            'status_code': status_code,
+
+            'messenger': self.__messenger,
+
+            'data': data,
+        }
+        tmp.update(data)
+        if self.__development_state:
             tmp['development_messages'] = messages
 
         ret = tmp
