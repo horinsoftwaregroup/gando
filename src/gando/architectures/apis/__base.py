@@ -383,12 +383,8 @@ class BaseAPI(APIView):
 
         tmp = {
             'success': success,
-
             'status_code': status_code,
-
             'messenger': self.__messenger,
-
-            'data': data,
         }
         tmp.update(data)
         if self.__development_state:
