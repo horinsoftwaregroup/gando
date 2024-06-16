@@ -97,8 +97,6 @@ class BaseAPI(APIView):
         self.__content_type: str | None = None
         self.__exception_status: bool = False
 
-        self.response_schema_version = self.request.headers.get('Response-Schema-Version') or '1.0.0'
-
     def __paste_to_request_func_loader(self, f, request, *args, **kwargs):
         try:
             mod_name, func_name = f.rsplit('.', 1)
@@ -319,6 +317,7 @@ class BaseAPI(APIView):
         return super().finalize_response(request, response, *args, **kwargs)
 
     def response_context(self, data=None):
+        self.response_schema_version = self.request.headers.get('Response-Schema-Version') or '1.0.0'
         if self.response_schema_version == '2.0.0':
             return self._response_context_v_2_0_0_response(data)
         return self._response_context_v_1_0_0_response(data)
