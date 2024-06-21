@@ -367,8 +367,8 @@ class BaseAPI(APIView):
 
         status_code = self.get_status_code()
         content_type = self.get_content_type()
-        data = self.validate_data()
-        many = self.__many()
+        data = self.validate_data_v_2_0_0_response()
+        many = self.__many_v_2_0_0_response()
 
         monitor = self.__monitor
 
@@ -486,6 +486,19 @@ class BaseAPI(APIView):
             return True
         return False
 
+    def __many_v_2_0_0_response(self):
+        if isinstance(self.__data, list):
+            return True
+        if (
+            isinstance(self.__data, dict) and
+            'count' in self.__data and
+            'next' in self.__data and
+            'previous' in self.__data and
+            'result' in self.__data
+        ):
+            return True
+        return False
+
     def __fail_message_messenger(self):
         for msg in self.__messenger:
             if msg.get('type', '') == 'FAIL' or msg.get('type', '') == 'ERROR':
@@ -588,6 +601,34 @@ class BaseAPI(APIView):
                 'next': None,
                 'previous': None,
                 'results': data,
+            }
+
+        elif isinstance(data, dict):
+            tmp = {'result': data}
+
+        else:
+            tmp = {'result': {}}
+
+        ret = tmp
+        return ret
+
+    def validate_data_v_2_0_0_response(self):
+        data = self.__data
+
+        if data is None:
+            self.__set_default_message()
+            tmp = {'result': {}}
+
+        elif isinstance(data, str) or issubclass(type(data), str):
+            data = self.__set_dynamic_message(data)
+            tmp = {'result': {'string': data} if data else {}}
+
+        elif isinstance(data, list):
+            tmp = {
+                'count': len(data),
+                'next': None,
+                'previous': None,
+                'result': data,
             }
 
         elif isinstance(data, dict):
