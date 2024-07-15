@@ -655,15 +655,17 @@ class BaseAPI(APIView):
         return SETTINGS.DEVELOPMENT_STATE
 
     def __development_messages_display(self):
-        ret = (
-            self.__development_state or
-            self.request.headers.get('Development-Messages-Display') == 'True')
+        if self.__development_state:
+            ret = self.request.headers.get('Development-Messages-Display') == 'True'
+        else:
+            ret = False
         return ret
 
     def __exception_status_display(self):
-        ret = (
-            self.__development_state or
-            self.request.headers.get('Exception-Status-Display') == 'True')
+        if self.__development_state:
+            ret = self.request.headers.get('Exception-Status-Display') == 'True'
+        else:
+            ret = False
         return ret
 
     def response(self, output_data=None):
