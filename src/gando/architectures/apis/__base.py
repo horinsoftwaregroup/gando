@@ -355,9 +355,11 @@ class BaseAPI(APIView):
             'many': many,
             'data': data,
         }
-        if self.__development_state:
-            tmp['exception_status'] = exception_status
+        if self.__development_messages_display():
             tmp['development_messages'] = messages
+
+        if self.__exception_status_display():
+            tmp['exception_status'] = exception_status
 
         ret = tmp
         return ret
@@ -387,8 +389,12 @@ class BaseAPI(APIView):
             'messenger': self.__messenger,
         }
         tmp.update(data)
-        if self.__development_state:
+
+        if self.__development_messages_display():
             tmp['development_messages'] = messages
+
+        if self.__exception_status_display():
+            tmp['exception_status'] = exception_status
 
         ret = tmp
         return ret
@@ -647,6 +653,18 @@ class BaseAPI(APIView):
     @property
     def __development_state(self):
         return SETTINGS.DEVELOPMENT_STATE
+
+    def __development_messages_display(self):
+        ret = (
+            self.__development_state or
+            self.request.headers.get('Development-Messages-Display') == 'True')
+        return ret
+
+    def __exception_status_display(self):
+        ret = (
+            self.__development_state or
+            self.request.headers.get('Exception-Status-Display') == 'True')
+        return ret
 
     def response(self, output_data=None):
         data = output_data
