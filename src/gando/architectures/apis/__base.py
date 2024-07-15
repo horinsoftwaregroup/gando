@@ -929,6 +929,12 @@ class BaseAPI(APIView):
         ret = self.__cookies_for_delete.append(key)
         return ret
 
+    @property
+    def get_query_params_fields(self):
+        fields = self.request.query_params.get('fields')
+        fields = fields if fields is None else fields.split(',')
+        return fields
+
 
 class CreateAPIView(BaseAPI, DRFGCreateAPIView):
     def create(self, request, *args, **kwargs):
