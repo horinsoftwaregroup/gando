@@ -656,14 +656,14 @@ class BaseAPI(APIView):
 
     def __development_messages_display(self):
         if self.__development_state:
-            ret = self.request.headers.get('Development-Messages-Display') == 'True'
+            ret = self.request.headers.get('Development-Messages-Display', 'True') == 'True'
         else:
             ret = False
         return ret
 
     def __exception_status_display(self):
         if self.__development_state:
-            ret = self.request.headers.get('Exception-Status-Display') == 'True'
+            ret = self.request.headers.get('Exception-Status-Display', 'True') == 'True'
         else:
             ret = False
         return ret
