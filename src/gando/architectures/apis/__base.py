@@ -20,13 +20,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from gando.config import SETTINGS
-from gando.http.api_exceptions import (
-    EnduserResponseAPIMessage,
+from gando.http.api_exceptions.developers import (
     DeveloperResponseAPIMessage,
 
     DeveloperExceptionResponseAPIMessage,
     DeveloperErrorResponseAPIMessage,
     DeveloperWarningResponseAPIMessage,
+)
+from gando.http.api_exceptions.endusers import (
+    EnduserResponseAPIMessage,
+
     EnduserFailResponseAPIMessage,
     EnduserErrorResponseAPIMessage,
     EnduserWarningResponseAPIMessage,

@@ -7,7 +7,7 @@ from .definitions import (
 )
 
 
-class EnduserExceptionResponseAPIMessage(EnduserResponseAPIMessage):
+class EnduserFailResponseAPIMessage(EnduserResponseAPIMessage):
     def __init__(
         self,
         message=BASE_ENDUSER_FAIL_MESSAGE,
@@ -23,7 +23,7 @@ class EnduserExceptionResponseAPIMessage(EnduserResponseAPIMessage):
         )
 
 
-class EnduserExceptionResponseAPIMessageInternalServerError500(EnduserExceptionResponseAPIMessage):
+class EnduserFailResponseAPIMessageInternalServerError500(EnduserFailResponseAPIMessage):
     def __init__(self, message=BASE_ENDUSER_FAIL_MESSAGE, code=BASE_ENDUSER_FAIL_CODE):
         super().__init__(
             message=message,
