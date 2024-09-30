@@ -319,11 +319,29 @@ class BaseAPI(APIView):
 
         return super().finalize_response(request, response, *args, **kwargs)
 
+    def _response_validator(self, input_data):
+        if isinstance(input_data, list):
+            if not len(list):
+                return None
+            return [self._response_validator(i) for i in input_data]
+        if isinstance(input_data, dict):
+            if not len(input_data.keys()):
+                return None
+            ret = {}
+            for k, v in input_data.items():
+                ret[k] = self._response_validator(v)
+            return ret
+        return input_data
+
     def response_context(self, data=None):
+        ret = None
+
         self.response_schema_version = self.request.headers.get('Response-Schema-Version') or '1.0.0'
         if self.response_schema_version == '2.0.0':
-            return self._response_context_v_2_0_0_response(data)
-        return self._response_context_v_1_0_0_response(data)
+            ret = self._response_context_v_2_0_0_response(data)
+        else:
+            ret = self._response_context_v_1_0_0_response(data)
+        return self._response_validator(ret)
 
     def _response_context_v_1_0_0_response(self, data=None):
         self.__data = self.__set_messages_from_data(data)
@@ -486,11 +504,11 @@ class BaseAPI(APIView):
         if isinstance(self.__data, list):
             return True
         if (
-            isinstance(self.__data, dict) and
-            'count' in self.__data and
-            'next' in self.__data and
-            'previous' in self.__data and
-            'results' in self.__data
+                isinstance(self.__data, dict) and
+                'count' in self.__data and
+                'next' in self.__data and
+                'previous' in self.__data and
+                'results' in self.__data
         ):
             return True
         return False
@@ -499,11 +517,11 @@ class BaseAPI(APIView):
         if isinstance(self.__data, list):
             return True
         if (
-            isinstance(self.__data, dict) and
-            'count' in self.__data and
-            'next' in self.__data and
-            'previous' in self.__data and
-            'result' in self.__data
+                isinstance(self.__data, dict) and
+                'count' in self.__data and
+                'next' in self.__data and
+                'previous' in self.__data and
+                'result' in self.__data
         ):
             return True
         return False
@@ -522,10 +540,10 @@ class BaseAPI(APIView):
 
     def __success(self):
         if (
-            len(self.__errors_message) == 0 and
-            len(self.__exceptions_message) == 0 and
-            not self.__exception_status and
-            not self.__fail_message_messenger()
+                len(self.__errors_message) == 0 and
+                len(self.__exceptions_message) == 0 and
+                not self.__exception_status and
+                not self.__fail_message_messenger()
         ):
             return True
         return False
