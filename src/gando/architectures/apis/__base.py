@@ -321,7 +321,7 @@ class BaseAPI(APIView):
 
     def _response_validator(self, input_data):
         if isinstance(input_data, list):
-            if not len(list):
+            if not len(input_data):
                 return None
             return [self._response_validator(i) for i in input_data]
         if isinstance(input_data, dict):
