@@ -280,7 +280,8 @@ class BaseAPI(APIView):
 
     def finalize_response(self, request, response, *args, **kwargs):
         mock_server_status = self.request.headers.get('Mock-Server-Status') or False
-        if mock_server_status and hasattr(self, 'mock_server'):
+        mock_server_switcher = self.mock_server_switcher if hasattr(self, 'mock_server_switcher') else False
+        if mock_server_switcher and mock_server_status and hasattr(self, 'mock_server'):
             return super().finalize_response(request, self.mock_server(), *args, **kwargs)
 
         if isinstance(response, Response):
