@@ -279,6 +279,10 @@ class BaseAPI(APIView):
         return response
 
     def finalize_response(self, request, response, *args, **kwargs):
+        mock_server_status = self.request.headers.get('Mock-Server-Status') or False
+        if mock_server_status and hasattr(self, 'mock_server'):
+            return super().finalize_response(request, self.mock_server(), *args, **kwargs)
+
         if isinstance(response, Response):
             self.helper()
 
